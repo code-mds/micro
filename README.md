@@ -2,5 +2,5 @@
 Programmazione Microcontrollori
 
 * IDE: MPLABX
-* Micro: PIC32MX
+* Micro: PIC32MX370F512L
 * Board: Digilent Basys MX3
