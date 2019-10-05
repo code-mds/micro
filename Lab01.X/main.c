@@ -28,27 +28,43 @@
 
 #define DELAY 1000000 // 1 second
 
+// simulo delay 1 sec
+void delay() {
+    int counter = DELAY;
+    while(counter) {
+        counter--;
+    }
+}
+
+// ANSELx: definisco se ANALOGICO=1 o DIGITAL=0
+// TRISx: definisco se INPUT=1 o OUTPUT=0
+// PORTx: per leggere il valore dei bit del registro
+// LATx: per scrivere bit nel registro
+// CNCON: interrupt (change modification)
+// ODCx: OpenDrain control (non approfondiamo)
+
 /*
- * 
+ * Accende tutti gli 8 led, uno alla volta con un ritardo di 1 secondo
+ * Quando sono tutti accesi li spegne e ricomincia
  */
-void main() {
+void main() {    
+    // set Port A come OUTPUT
+    // la porta A ha 12 pin
+    TRISA = 0x0000; 
     
-    TRISA = 0x0000;
-    int i, counter;
+    int i;
     while(1) {
-        LATA = 0x0000;
+        LATA = 0x0000;  // Metto tutti i bit Port A a 0
             
         for(i= 0; i<8; i++) {
-            // delay 1 sec
-            counter = DELAY;
-            while(counter) {
-                counter--;
-            }
+            delay();
             
             switch(i) {
                 case 0:
-                    LATAbits.LATA0 = 1;
+                    // Setto il singolo bit della Port A a 1
+                    LATAbits.LATA0 = 1;  //A0 corrisponde al LED0
                     break;
+                    
                 case 1:
                     LATAbits.LATA1 = 1;
                     break;
@@ -68,7 +84,7 @@ void main() {
                     LATAbits.LATA6 = 1;
                     break;
                 case 7:
-                    LATAbits.LATA7 = 1;
+                    LATAbits.LATA7 = 1; //A0 corrisponde al LED7
                     break;
             }
         }        
