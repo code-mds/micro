@@ -33,7 +33,7 @@
 /*
  * 
  */
-void delay() {
+void delay() {    
     int counter = DELAY;
     while(counter) {
         counter--;
@@ -80,7 +80,7 @@ void es2_control_led_uart() {
         char msg[30];
         utils_uart_getU4_string(msg, 30);
         int idx = '0' - msg[3];
-        int op = msg[6] == 'N';   //N=ON, F=OFF
+        int op = msg[6] == 'N' || msg[6] == 'n';   //N=ON, F=OFF
         
         utils_led_set(idx, op);
         sprintf(msg, "OK, LED%d %s\r\n", i, 

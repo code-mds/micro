@@ -1,4 +1,5 @@
 #include <p32xxxx.h>
+#include <string.h>
 #include "utils_uart.h"
 
 void utils_uart_ConfigurePins() 
@@ -13,7 +14,7 @@ void utils_uart_ConfigureUart(int baud) {
     unsigned int PbusClock = 40000000;
     unsigned int UartBrg = 0;
     
-    U4MODE = 0x000;
+    U4MODE = 0x0000;
     U4MODEbits.STSEL = 0; // 1 bit stop    
     U4MODEbits.PDSEL = 0; // nessuna parita
             
@@ -28,30 +29,37 @@ void utils_uart_ConfigureUart(int baud) {
 
 int utils_uart_putU4(int c)
 {
-    while(U4STAbits.UTXBF==1);
+    while(U4STAbits.UTXBF==1);  // wait while the buffer is full
     U4TXREG=c;
 }
 /****************************************************************/
 char utils_uart_getU4(void)
 {
-    while(!U4STAbits.URXDA);//wait for a new char to arrive
-    return U4RXREG; //read char from receive buffer
+    while(!U4STAbits.URXDA);    //wait for a new char to arrive
+    utils_uart_putU4_string("RICEVUTO");
+    char ch = U4RXREG;          //read char from receive buffer
+    return ch; 
 }
 /****************************************************************/
-void utils_uart_putU4_string(char szData[])
+void utils_uart_putU4_string(const char* buffer)
 {
-    char* pData = szData;
-    while(*pData) {
-        utils_uart_putU4((*(pData++)));
+    size_t size = strlen(buffer);
+    while(size > 0) {
+        utils_uart_putU4(*buffer);
+        buffer++;
+        size--;
     }
+    
+    while( !U4STAbits.TRMT); // wait for last trasmission to finish
 }
 
-void utils_uart_getU4_string(char buffer[], int sz)
+int utils_uart_getU4_string(char* buffer, int max_sz)
 {
     int i=0;
     char ch;
-    for(i=0; i<sz || ch == '\n'; i++) {
+    for(i=0; i<max_sz || ch == '\r'; i++) {
         ch = utils_uart_getU4();
         buffer[i] = ch;
     }
+    return i;
 }

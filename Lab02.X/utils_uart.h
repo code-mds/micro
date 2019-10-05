@@ -16,8 +16,8 @@ extern "C" {
     void utils_uart_ConfigureUart(int baud);
     int utils_uart_putU4(int c);
     char utils_uart_getU4(void);
-    void utils_uart_putU4_string(char szData[]);
-    void utils_uart_getU4_string(char buffer[], int sz);
+    void utils_uart_putU4_string(const char* buffer);
+    int utils_uart_getU4_string(char* buffer, int max_sz);
 #ifdef	__cplusplus
 }
 #endif
