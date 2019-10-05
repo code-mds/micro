@@ -14,6 +14,9 @@ void utils_uart_ConfigureUart(int baud) {
     unsigned int UartBrg = 0;
     
     U4MODE = 0x000;
+    U4MODEbits.STSEL = 0; // 1 bit stop    
+    U4MODEbits.PDSEL = 0; // nessuna parita
+            
     UartBrg = (int)(((float)PbusClock/(16*baud)-1)+0.5);
     U4BRG  = UartBrg;
     

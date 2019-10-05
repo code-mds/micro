@@ -13,6 +13,7 @@ extern "C" {
 #endif
 
     void utils_led_init();
+    int utils_led_get(int idx);
     void utils_led_set(int idx, int value);
 
 #ifdef	__cplusplus

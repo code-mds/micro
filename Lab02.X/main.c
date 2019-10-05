@@ -28,7 +28,7 @@
 #pragma config FPLLMUL = MUL_20
 #pragma config FPLLODIV = DIV_1
 
-#define DELAY 1000000 // 1 second
+#define DELAY 500000 // 1 second
 
 /*
  * 
@@ -54,15 +54,23 @@ void main() {
     int i;
     while(1) {
         delay();
-        for(i=0; i<1; i++) {
+        //utils_uart_putU4string("\x1b[2J");
+        char header[30];
+        sprintf(header, "%c[H** Switch/Led Status **\r\n", 0x1B);
+            
+        utils_uart_putU4string(header);
+        for(i=0; i<8; i++) {
             int val = utils_switch_get(i);
             utils_led_set(i, val);
             
-            char msg[10];
-            sprintf(msg, "LED%d %s\r\n", i, val?"ON":"OFF");
-            utils_uart_putU4string(msg);            
- 
-            sprintf(msg, "OK, LED%d %s\r\n", i, val?"acceso":"spento");
+            char msg[30];
+            sprintf(msg, "LED%d %s\r\n", i, 
+                    val?"ON ":"OFF");
+            
+//            val = utils_led_get(i);
+//            sprintf(msg, "OK, LED%d %s\r", i, 
+//                   val?"acceso":"spento");
+
             utils_uart_putU4string(msg);            
         }
     }    

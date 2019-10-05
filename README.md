@@ -51,7 +51,7 @@ U4RXR = 0b1001;        // mapping RPF13 to U4RX
 // setto i 2 bit (8 e 9) per TX e RX, 00=TX+RX usati
 U4MODEbits.UEN = 0b00; // 0b=binario, 0x esadecimale
 
-// setto i 2 bit (1 e 2) per parita',  00=nesszba, 01=pari, 02=dispari
+// setto i 2 bit (1 e 2) per parita',  00=nessuna, 01=pari, 02=dispari
 U4MODEbits.PDSEL = 0b01; 
 
 // setto il bit (0) per stop bit, 0=1bit stop   (1=2bit stop)
