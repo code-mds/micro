@@ -1,5 +1,4 @@
-# micro
-Programmazione Microcontrollori
+# Programmazione Microcontrollori
 
 * IDE: MPLABX
 * Micro: PIC32MX370F512L
@@ -21,7 +20,7 @@ Programmazione Microcontrollori
 
 Where `x` is the name of a port (A, B, C, D, ...)
 
-#### Example: Toggle pin 0 of Port D
+#### Esempio: Toggle pin 0 of Port D
 ```
 // operatore not: ~
 LATDbits.LATD0 = ~LATDbits.LATD0; 
@@ -35,24 +34,51 @@ LATDINV = 0x0001
 | -------- | ----------- |
 | `UxMODE` | configurazione: ON/OFF, parity, # data bits, stop bits, flow control |
 | `UxSTA`  | stato | 
-| `UxTXREG`  | trasmettere dati |
-| `UxRXREG`  | ricevere dati |
+| `UxTXREG` | trasmettere dati |
+| `UxRXREG` | ricevere dati |
 | `UxBRG`  | baud rate generator |
 
 Where `x` is [1..6] to identify UART1 ... UART6
 
-#### Example: config
+#### Esempio: config UART4 (that is connected to the micro_usb)
+From schematic and ref. manual, UART4 is on pin RF12 (TX) and RF13 (RX)
 ```
-//setto il bit (15) per UART ON/OFF, 1=ON
-U1MODEbits.ON = 1;
+TRISFbits.TRISF12 = 0; // TX digital output
+RPF12R = 0b0010;       // mapping U4TX to RPF12
+TRISFbits.TRISF13 = 0; // RX digital output
+U4RXR = 0b1001;        // mapping RPF13 to U4RX
 
 // setto i 2 bit (8 e 9) per TX e RX, 00=TX+RX usati
-U1MODEbits.UEN = 0b00; // 0b=binario, 0x esadecimale
+U4MODEbits.UEN = 0b00; // 0b=binario, 0x esadecimale
 
-// setto i 2 bit (1 e 2) per parita',  01=parita' pari
-U1MODEbits.PDSEL = 0b01; 
+// setto i 2 bit (1 e 2) per parita',  00=nesszba, 01=pari, 02=dispari
+U4MODEbits.PDSEL = 0b01; 
 
-// setto il bit (0) per stop bit, 0=1 bit stop   (1=2 bit stops)
-U1MODEbits.STSEL = 0; 
+// setto il bit (0) per stop bit, 0=1bit stop   (1=2bit stop)
+U4MODEbits.STSEL = 0; 
+
+// abilita trasmissione
+U4STAbits.UTXEN = 1;    
+
+// abilita ricezione
+U4STAbits.URXEN = 1;    
+
+// setto il bit (15) per UART ON/OFF, 1=ON
+U4MODEbits.ON = 1;
+```
+
+Trasmissione Dati
+```
+// aspetta finche' il buffer e' pieno, poi scrivi il carattere 'a'
+while(!U4STAbits.UTXBF);
+U4TXREG = 'a';
+```
+
+Ricezione Dati
+```
+// aspetta un nuovo carattare e poi leggilo
+while(!U4STAbits.URXDA);
+char ch = U4RXREG;
+
 ```
 

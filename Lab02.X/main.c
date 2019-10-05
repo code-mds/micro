@@ -40,11 +40,11 @@ void delay() {
 
 void main() {
     // uart configuration variables
-    unsigned int DesiredBaudRate = 9600;
+    unsigned int baudRate = 9600;
     // data to send
 
     UART_ConfigurePins();
-    UART_ConfigureUart(DesiredBaudRate);
+    UART_ConfigureUart(baudRate);
     
     while(1) {
         delay();
