@@ -38,10 +38,20 @@ char utils_uart_getU4(void)
     return U4RXREG; //read char from receive buffer
 }
 /****************************************************************/
-void utils_uart_putU4string(char szData[])
+void utils_uart_putU4_string(char szData[])
 {
     char* pData = szData;
     while(*pData) {
         utils_uart_putU4((*(pData++)));
+    }
+}
+
+void utils_uart_getU4_string(char buffer[], int sz)
+{
+    int i=0;
+    char ch;
+    for(i=0; i<sz || ch == '\n'; i++) {
+        ch = utils_uart_getU4();
+        buffer[i] = ch;
     }
 }

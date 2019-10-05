@@ -40,25 +40,20 @@ void delay() {
     }   
 }
 
-void main() {
-    // uart configuration variables
-    unsigned int baudRate = 9600;
-    // data to send
-
-    utils_led_init();
-    utils_switch_init();
-    
-    utils_uart_ConfigurePins();
-    utils_uart_ConfigureUart(baudRate);
-    
+void es1_check_led_uart() {
     int i;
     while(1) {
         delay();
+        
+        // clear screen
         //utils_uart_putU4string("\x1b[2J");
+        
+        // move the cursor to the home position (upper left hand of the screen)
+        // without deleting any of the current information on the screen.
         char header[30];
         sprintf(header, "%c[H** Switch/Led Status **\r\n", 0x1B);
             
-        utils_uart_putU4string(header);
+        utils_uart_putU4_string(header);
         for(i=0; i<8; i++) {
             int val = utils_switch_get(i);
             utils_led_set(i, val);
@@ -66,13 +61,45 @@ void main() {
             char msg[30];
             sprintf(msg, "LED%d %s\r\n", i, 
                     val?"ON ":"OFF");
-            
-//            val = utils_led_get(i);
-//            sprintf(msg, "OK, LED%d %s\r", i, 
-//                   val?"acceso":"spento");
 
-            utils_uart_putU4string(msg);            
+            utils_uart_putU4_string(msg);            
         }
-    }    
+    }       
+}
+
+void es2_control_led_uart() {
+    char header[30];
+    utils_uart_putU4_string("\x1b[2J"); // clear screen
+    sprintf(header, "%c[H** paste a command: 'LED0 ON' **\r\n", 0x1B);
+    utils_uart_putU4_string(header);
+        
+    int i;
+    while(1) {
+        delay();
+        
+        char msg[30];
+        utils_uart_getU4_string(msg, 30);
+        int idx = '0' - msg[3];
+        int op = msg[6] == 'N';   //N=ON, F=OFF
+        
+        utils_led_set(idx, op);
+        sprintf(msg, "OK, LED%d %s\r\n", i, 
+                op?"acceso":"spento");
+        
+        utils_uart_putU4_string(msg);
+    }
+}
+
+void main() {
+    // uart configuration variables
+    unsigned int baudRate = 9600;
+    utils_led_init();
+    utils_switch_init();
+    
+    utils_uart_ConfigurePins();
+    utils_uart_ConfigureUart(baudRate);
+    
+    //es1_check_led_uart();
+    es2_control_led_uart();
 }
 
