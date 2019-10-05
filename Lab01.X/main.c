@@ -43,10 +43,7 @@ void delay() {
 // CNCON: interrupt (change modification)
 // ODCx: OpenDrain control (non approfondiamo)
 
-
-void testSwitch() {
-    
-    // set Port F come INPUT
+void init_switch() {
     TRISFbits.TRISF3 = 1; // RF3 (SW0) configured as input
     TRISFbits.TRISF5 = 1; // RF5 (SW1) configured as input
     TRISFbits.TRISF4 = 1; // RF4 (SW2) configured as input
@@ -58,9 +55,11 @@ void testSwitch() {
     ANSELBbits.ANSB10 = 0; // RB10 (SW6) disabled analog
     TRISBbits.TRISB9 = 1; // RB9 (SW7) configured as input
     ANSELBbits.ANSB9 = 0; // RB9 (SW7) disabled analog
-    
+}
+
+void testSwitch() {
     LATA = 0x0000;  // Spengo tutti i LED
-    
+    init_switch();
     while(1) {
         LATAbits.LATA0 = PORTFbits.RF3; // accendo il led0 se switch 0 on
         LATAbits.LATA1 = PORTFbits.RF5; // accendo il led1 se switch 1 on

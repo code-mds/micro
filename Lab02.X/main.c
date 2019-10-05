@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <p32xxxx.h>
-#include "Uart.h"
+#include "utils_uart.h"
+#include "utils_led.h"
+#include "utils_switch.h"
 
 /* Disable JTAG to use RA0 */   
 #pragma config JTAGEN = OFF
@@ -43,12 +45,26 @@ void main() {
     unsigned int baudRate = 9600;
     // data to send
 
-    UART_ConfigurePins();
-    UART_ConfigureUart(baudRate);
+    utils_led_init();
+    utils_switch_init();
     
+    utils_uart_ConfigurePins();
+    utils_uart_ConfigureUart(baudRate);
+    
+    int i;
     while(1) {
         delay();
-        putU4string("CIAO\r");
+        for(i=0; i<1; i++) {
+            int val = utils_switch_get(i);
+            utils_led_set(i, val);
+            
+            char msg[10];
+            sprintf(msg, "LED%d %s\r\n", i, val?"ON":"OFF");
+            utils_uart_putU4string(msg);            
+ 
+            sprintf(msg, "OK, LED%d %s\r\n", i, val?"acceso":"spento");
+            utils_uart_putU4string(msg);            
+        }
     }    
 }
 
