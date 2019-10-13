@@ -2,7 +2,8 @@
 #include "utils_led.h"
 
 void utils_led_init() {
-    TRISA = 0x0000; 
+    TRISA = 0x0000;
+    LATA = 0x0000;
 }
 
 int utils_led_get(int idx) {
