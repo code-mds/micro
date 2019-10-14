@@ -17,6 +17,11 @@ extern "C" {
     void utils_led_set(int idx, int value);
     int utils_led_get(int idx);
 
+    enum {
+        LED_OFF = 0,
+        LED_ON = 1
+    };
+    
 #ifdef	__cplusplus
 }
 #endif

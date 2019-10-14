@@ -8,6 +8,7 @@
       <itemPath>utils_uart.h</itemPath>
       <itemPath>utils_switch.h</itemPath>
       <itemPath>utils_timer.h</itemPath>
+      <itemPath>utils_common.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -20,6 +21,7 @@
       <itemPath>utils_switch.c</itemPath>
       <itemPath>utils_uart.c</itemPath>
       <itemPath>utils_timer.c</itemPath>
+      <itemPath>utils_common.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

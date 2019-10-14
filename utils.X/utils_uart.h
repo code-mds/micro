@@ -11,8 +11,8 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-    void utils_uart_ConfigurePins(void);
-    void utils_uart_ConfigureUart(int baud);
+    void utils_uart_init(int baud, int pbus_clock);
+    
     int utils_uart_putU4(int c);
     char utils_uart_getU4(void);
     void utils_uart_putU4_string(const char* buffer);

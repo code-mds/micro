@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=utils_led.c utils_switch.c utils_uart.c utils_timer.c
+SOURCEFILES_QUOTED_IF_SPACED=utils_led.c utils_switch.c utils_uart.c utils_timer.c utils_common.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/utils_led.o ${OBJECTDIR}/utils_switch.o ${OBJECTDIR}/utils_uart.o ${OBJECTDIR}/utils_timer.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/utils_led.o.d ${OBJECTDIR}/utils_switch.o.d ${OBJECTDIR}/utils_uart.o.d ${OBJECTDIR}/utils_timer.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/utils_led.o ${OBJECTDIR}/utils_switch.o ${OBJECTDIR}/utils_uart.o ${OBJECTDIR}/utils_timer.o ${OBJECTDIR}/utils_common.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/utils_led.o.d ${OBJECTDIR}/utils_switch.o.d ${OBJECTDIR}/utils_uart.o.d ${OBJECTDIR}/utils_timer.o.d ${OBJECTDIR}/utils_common.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/utils_led.o ${OBJECTDIR}/utils_switch.o ${OBJECTDIR}/utils_uart.o ${OBJECTDIR}/utils_timer.o
+OBJECTFILES=${OBJECTDIR}/utils_led.o ${OBJECTDIR}/utils_switch.o ${OBJECTDIR}/utils_uart.o ${OBJECTDIR}/utils_timer.o ${OBJECTDIR}/utils_common.o
 
 # Source Files
-SOURCEFILES=utils_led.c utils_switch.c utils_uart.c utils_timer.c
+SOURCEFILES=utils_led.c utils_switch.c utils_uart.c utils_timer.c utils_common.c
 
 
 
@@ -131,6 +131,12 @@ ${OBJECTDIR}/utils_timer.o: utils_timer.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/utils_timer.o 
 	@${FIXDEPS} "${OBJECTDIR}/utils_timer.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/utils_timer.o.d" -o ${OBJECTDIR}/utils_timer.o utils_timer.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
+${OBJECTDIR}/utils_common.o: utils_common.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/utils_common.o.d 
+	@${RM} ${OBJECTDIR}/utils_common.o 
+	@${FIXDEPS} "${OBJECTDIR}/utils_common.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/utils_common.o.d" -o ${OBJECTDIR}/utils_common.o utils_common.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
 else
 ${OBJECTDIR}/utils_led.o: utils_led.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -155,6 +161,12 @@ ${OBJECTDIR}/utils_timer.o: utils_timer.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/utils_timer.o.d 
 	@${RM} ${OBJECTDIR}/utils_timer.o 
 	@${FIXDEPS} "${OBJECTDIR}/utils_timer.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/utils_timer.o.d" -o ${OBJECTDIR}/utils_timer.o utils_timer.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/utils_common.o: utils_common.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/utils_common.o.d 
+	@${RM} ${OBJECTDIR}/utils_common.o 
+	@${FIXDEPS} "${OBJECTDIR}/utils_common.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/utils_common.o.d" -o ${OBJECTDIR}/utils_common.o utils_common.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 endif
 

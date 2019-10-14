@@ -1,18 +1,28 @@
 #include <p32xxxx.h>
 #include "utils_switch.h"
 
+enum {
+    OUTPUT = 0,
+    INPUT = 1
+};
+
+enum {
+    DIGITAL = 0,
+    ANALOG = 1
+};
+
 void utils_switch_init() {
-    TRISFbits.TRISF3 = 1; // RF3 (SW0) configured as input
-    TRISFbits.TRISF5 = 1; // RF5 (SW1) configured as input
-    TRISFbits.TRISF4 = 1; // RF4 (SW2) configured as input
-    TRISDbits.TRISD15 = 1; // RD15 (SW3) configured as input
-    TRISDbits.TRISD14 = 1; // RD14 (SW4) configured as input
-    TRISBbits.TRISB11 = 1; // RB11 (SW5) configured as input
-    ANSELBbits.ANSB11 = 0; // RB11 (SW5) disabled analog
-    TRISBbits.TRISB10 = 1; // RB10 (SW6) configured as input
-    ANSELBbits.ANSB10 = 0; // RB10 (SW6) disabled analog
-    TRISBbits.TRISB9 = 1; // RB9 (SW7) configured as input
-    ANSELBbits.ANSB9 = 0; // RB9 (SW7) disabled analog
+    TRISFbits.TRISF3 = INPUT; // RF3 (SW0) configured as input
+    TRISFbits.TRISF5 = INPUT; // RF5 (SW1) configured as input
+    TRISFbits.TRISF4 = INPUT; // RF4 (SW2) configured as input
+    TRISDbits.TRISD15 = INPUT; // RD15 (SW3) configured as input
+    TRISDbits.TRISD14 = INPUT; // RD14 (SW4) configured as input
+    TRISBbits.TRISB11 = INPUT; // RB11 (SW5) configured as input
+    ANSELBbits.ANSB11 = DIGITAL; // RB11 (SW5) disabled analog
+    TRISBbits.TRISB10 = INPUT; // RB10 (SW6) configured as input
+    ANSELBbits.ANSB10 = DIGITAL; // RB10 (SW6) disabled analog
+    TRISBbits.TRISB9 = INPUT; // RB9 (SW7) configured as input
+    ANSELBbits.ANSB9 = DIGITAL; // RB9 (SW7) disabled analog
 }
 
 int utils_switch_get(int idx) {

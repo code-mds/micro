@@ -2,8 +2,13 @@
 #include <string.h>
 #include "utils_uart.h"
 
-unsigned int PbusClock = 40000000;
-unsigned int UartBrg = 0;
+void utils_uart_ConfigurePins();
+void utils_uart_ConfigureUart(int baud, int pbusClock);
+
+void utils_uart_init(int baud, int pbus_clock) {
+    utils_uart_ConfigurePins();
+    utils_uart_ConfigureUart(baud, pbus_clock);
+}
 
 void utils_uart_ConfigurePins() {
     TRISFbits.TRISF12 = 0;  // TX digital output
@@ -13,7 +18,7 @@ void utils_uart_ConfigurePins() {
     U4RXR = 9;//0b1001;     // mapping RPF13 to U4RX
 }
 
-void utils_uart_ConfigureUart(int baud) {
+void utils_uart_ConfigureUart(int baud, int pbus_clock) {
     U4MODEbits.ON = 0;
     U4MODEbits.SIDL = 0;
     U4MODEbits.IREN = 0;
@@ -28,7 +33,7 @@ void utils_uart_ConfigureUart(int baud) {
     U4MODEbits.PDSEL0 = 0;
     U4MODEbits.BRGH = 0;
     U4MODEbits.STSEL = 0; // 1 bit stop    
-    U4BRG  = (int)(((float)PbusClock / (16*baud) -1) + 0.5);
+    U4BRG  = (int)(((float)pbus_clock / (16*baud) -1) + 0.5);
     
     U4STAbits.UTXEN = 1;    // abilita trasmissione
     U4STAbits.URXEN = 1;    // abilita ricezione
@@ -68,5 +73,6 @@ int utils_uart_getU4_string(char* buffer, int max_sz)
         ch = utils_uart_getU4();
         buffer[i] = ch;
     }
+    buffer[i-1] = 0;
     return i;
 }
