@@ -37,12 +37,11 @@
 #pragma config FWDTEN = OFF     // Watchdog Timer Disabled
 
 
-unsigned int baud = 9600;
-unsigned int pbus_clock = 20000000;
-unsigned int tm2_period = 500;
-unsigned int tm2_prescaler = 0b111;
-unsigned int tm2_use_interrupt = 1;
+const unsigned int baud = 9600;
+const unsigned int pbus_clock = 20000000;
+const unsigned int tm_period = 500;
 //PR2 = 500 / ((1/20000000) * 1000 * 256) = 500 / 0.0128  = 39063
+
 unsigned int timer_elapsed = 0;
 
 void main() {
@@ -52,8 +51,9 @@ void main() {
     utils_led_init();
     utils_uart_putU4_string("led ready\r\n");
     
-    utils_timer2_init(tm2_period, pbus_clock, tm2_prescaler, 
-            tm2_use_interrupt, 6, 0);
+    utils_timer2_init(
+            tm_period, pbus_clock, tmx_prescaler_t.TMx_DIV_256, 
+            tm_use_interrupt_t.TM_INTERRUPT_ON, 6, 0);
     utils_uart_putU4_string("timer ready\r\n");
         
 
@@ -67,7 +67,7 @@ void main() {
     }
 }
 
-void __attribute__(( interrupt(ipl6), vector(8)))
+void __attribute__(( interrupt(ipl6), vector(_TIMER_2_VECTOR)))
 timer2_int_handler(void) {
     timer_elapsed = 1;
     IFS0bits.T2IF = 0; // reset interrupt
