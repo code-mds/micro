@@ -45,16 +45,16 @@ const unsigned int tm_period = 500;
 unsigned int timer_elapsed = 0;
 
 void main() {
-    utils_uart_init(baud, pbus_clock);
-    utils_uart_putU4_string("uart ready\r\n");
+    utils_uart4_init(baud, pbus_clock);
+    utils_uart4_puts("uart ready\r\n");
     
     utils_led_init();
-    utils_uart_putU4_string("led ready\r\n");
+    utils_uart4_puts("led ready\r\n");
     
     utils_timer2_init(
             tm_period, pbus_clock, tmx_prescaler_t.TMx_DIV_256, 
             tm_use_interrupt_t.TM_INTERRUPT_ON, 6, 0);
-    utils_uart_putU4_string("timer ready\r\n");
+    utils_uart4_puts("timer ready\r\n");
         
 
     utils_common_macro_enable_interrupts();
@@ -62,7 +62,7 @@ void main() {
     while(1) {
         if(timer_elapsed) {
             timer_elapsed = 0;
-            utils_uart_putU4_string("timer interrupt xx\r\n");
+            utils_uart4_puts("timer interrupt xx\r\n");
         }
     }
 }

@@ -11,12 +11,12 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-    void utils_uart_init(int baud, int pbus_clock);
+    void utils_uart4_init(int baud, int pbus_clock);
     
-    int utils_uart_putU4(int c);
-    char utils_uart_getU4(void);
-    void utils_uart_putU4_string(const char* buffer);
-    int utils_uart_getU4_string(char* buffer, int max_sz);
+    int utils_uart4_putc(int c);
+    char utils_uart4_getc(void);
+    void utils_uart4_puts(const char* buffer);
+    int utils_uart4_gets(char* buffer, int max_sz);
     
 #ifdef	__cplusplus
 }

@@ -2,15 +2,15 @@
 #include <string.h>
 #include "utils_uart.h"
 
-void utils_uart_ConfigurePins();
-void utils_uart_ConfigureUart(int baud, int pbusClock);
+void utils_uart4_ConfigurePins();
+void utils_uart4_ConfigureUart(int baud, int pbusClock);
 
-void utils_uart_init(int baud, int pbus_clock) {
-    utils_uart_ConfigurePins();
-    utils_uart_ConfigureUart(baud, pbus_clock);
+void utils_uart4_init(int baud, int pbus_clock) {
+    utils_uart4_ConfigurePins();
+    utils_uart4_ConfigureUart(baud, pbus_clock);
 }
 
-void utils_uart_ConfigurePins() {
+void utils_uart4_ConfigurePins() {
     TRISFbits.TRISF12 = 0;  // TX digital output
     RPF12R = 2; //0b0010;   // mapping U4TX to RPF12
     
@@ -18,7 +18,7 @@ void utils_uart_ConfigurePins() {
     U4RXR = 9;//0b1001;     // mapping RPF13 to U4RX
 }
 
-void utils_uart_ConfigureUart(int baud, int pbus_clock) {
+void utils_uart4_ConfigureUart(int baud, int pbus_clock) {
     U4MODEbits.ON = 0;
     U4MODEbits.SIDL = 0;
     U4MODEbits.IREN = 0;
@@ -40,24 +40,24 @@ void utils_uart_ConfigureUart(int baud, int pbus_clock) {
     U4MODEbits.ON = 1;      // UART ON
 }
 
-int utils_uart_putU4(int c)
+int utils_uart4_putc(int c)
 {
     while(U4STAbits.UTXBF == 1);  // wait while the buffer is full
     U4TXREG=c;
 }
 /****************************************************************/
-char utils_uart_getU4(void)
+char utils_uart4_getc(void)
 {
     while(!U4STAbits.URXDA);    //wait for a new char to arrive
     char ch = U4RXREG;          //read char from receive buffer
     return ch; 
 }
 /****************************************************************/
-void utils_uart_putU4_string(const char* buffer)
+void utils_uart4_puts(const char* buffer)
 {
     size_t size = strlen(buffer);
     while(size > 0) {
-        utils_uart_putU4(*buffer);
+        utils_uart4_putc(*buffer);
         buffer++;
         size--;
     }
@@ -65,12 +65,12 @@ void utils_uart_putU4_string(const char* buffer)
     while( !U4STAbits.TRMT); // wait for last trasmission to finish
 }
 
-int utils_uart_getU4_string(char* buffer, int max_sz)
+int utils_uart4_gets(char* buffer, int max_sz)
 {
     int i=0;
     char ch = 0;
     for(i=0; i<max_sz && ch != '\r'; i++) {
-        ch = utils_uart_getU4();
+        ch = utils_uart4_getc();
         buffer[i] = ch;
     }
     buffer[i-1] = 0;
