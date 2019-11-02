@@ -50,7 +50,9 @@ void main() {
     utils_led_init();
     utils_uart_putU4_string("led ready\r\n");
     
-    utils_timer2_init(tm2_period, pbus_clock, tm2_prescaler);
+        
+    utils_timer2_init(tm2_period, pbus_clock, tm2_prescaler, 
+            0, 6, 0);
     utils_uart_putU4_string("timer ready\r\n");
     
     //es1();

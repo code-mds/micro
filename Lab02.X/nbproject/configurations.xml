@@ -37,7 +37,7 @@
         <targetDevice>PIC32MX370F512L</targetDevice>
         <targetHeader></targetHeader>
         <targetPluginBoard></targetPluginBoard>
-        <platformTool>PK3OBPlatformTool</platformTool>
+        <platformTool>Simulator</platformTool>
         <languageToolchain>XC32</languageToolchain>
         <languageToolchainVersion>2.30</languageToolchainVersion>
         <platform>3</platform>
@@ -207,7 +207,6 @@
         <property key="ToolFirmwareFilePath"
                   value="Press to browse for a specific firmware version"/>
         <property key="ToolFirmwareOption.UseLatestFirmware" value="true"/>
-        <property key="firmware.download.all" value="false"/>
         <property key="memories.bootflash" value="true"/>
         <property key="memories.configurationmemory" value="true"/>
         <property key="memories.dataflash" value="true"/>
@@ -279,7 +278,7 @@
         <property key="uart3io.uartioenabled" value="false"/>
         <property key="uart4io.output" value="window"/>
         <property key="uart4io.outputfile" value=""/>
-        <property key="uart4io.uartioenabled" value="false"/>
+        <property key="uart4io.uartioenabled" value="true"/>
         <property key="uart5io.output" value="window"/>
         <property key="uart5io.outputfile" value=""/>
         <property key="uart5io.uartioenabled" value="false"/>

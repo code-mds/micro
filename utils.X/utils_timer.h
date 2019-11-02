@@ -13,10 +13,12 @@ extern "C" {
 #endif
 
     // prescaler 0..3: 1,8,64,256
-    void utils_timer1_init(int ms, int freq, int prescaler);
-
+    void utils_timer1_init(int period_ms, int bus_freq, int prescaler_idx, 
+            int use_interrupt, int priority, int sub_priority);
+    
     // prescaler 0..7: 1,2,4,8,16,32,64,256
-    void utils_timer2_init(int ms, int freq, int prescaler);
+    void utils_timer2_init(int period_ms, int bus_freq, int prescaler_idx, 
+            int use_interrupt, int priority, int sub_priority);
 
 #ifdef	__cplusplus
 }

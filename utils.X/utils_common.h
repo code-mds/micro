@@ -14,7 +14,17 @@ extern "C" {
 
     void utils_common_delay(int counter);
     void utils_common_tolower(char* str);
-
+    
+    
+// Macro Per Interrupt   
+#define utils_common_macro_enable_interrupts()\
+{   unsigned int val = 0;\
+    asm volatile("mfc0 %0,$13":"=r"(val));\
+    val |= 0x00800000;\
+    asm volatile("mfc0 %0,$13":"+r"(val));\
+    INTCONbits.MVEC = 1;\
+    __builtin_enable_interrupts();}
+    
 #ifdef	__cplusplus
 }
 #endif
