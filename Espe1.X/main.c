@@ -22,25 +22,38 @@
 #pragma config JTAGEN = OFF     // Disable JTAG
 #pragma config FWDTEN = OFF     // Watchdog Timer Disabled
 
+// ***********************************************
 // CLOCK CONFIGURATION (Program Time: DEVCFGx bits)
-#pragma config FNOSC = FRCPLL // XTPLL, HSPLL, ECPLL, FRCPLL in FNOXC mux
-                              // FRCPLL: Internal Fast RC oscillator (8 MHz)
-// POSC: Primary Oscillator
-#pragma config POSCMOD = XT   // HS, XT, EC
-#pragma config FSOSCEN = OFF  // Disable Secondary oscillator
-#pragma config OSCIOFNC = ON  // CLKO Enable Configuration bit
-#pragma config FPBDIV = DIV_2 // Peripheral Bus Clock Divisor
+
+// Clock Sorgenti
+// - Oscillatori interni: FRC (8Mhz), LPRC (31.25KHz)
+// - Oscillatori esterni; POSC (8MHz), SOSC (32.768KHz))
 
 // Configurazione PLL: Phase Locked Loop , per aumentare la frequenza
 #pragma config FPLLIDIV = DIV_2 // 1) PLL IN: Divide FRC before PLL 
-#pragma config FPLLMUL = MUL_20 // 2) PLL Multiply ( 4MHz <= IN < 5MHz )
+#pragma config FPLLMUL = MUL_20 // 2) PLL Multiply x range [4MHz <= IN < 5MHz]
 #pragma config FPLLODIV = DIV_2 // 3) PLL OUT: Divide After PLL
+// FRCPLL = FRC : FPLLIDIV * FPLLMUL : FPLLODIV = 8Mhz/2*20/2=40Mhz
+
+// FNOSC Mutex: FRC, FRCPLL, PRI, PRIPLL, SOSC, LPRC, FRCDIV16, FRCDIV 
+//       In base alla selezione avro' un SYS Clock (e un per bus clk) diverso
+#pragma config FNOSC = FRCPLL // FRCPLL: Internal Fast RC oscillator
+
+// FPBDIV Postscaler: Peripheral Bus Clock Divisor
+#pragma config FPBDIV = DIV_2 // Peripheral Bus Clock = SYS clock / 2 = 20Mhz
+
+// POSC: Primary Oscillator, ha effetto sul USB Clock
+#pragma config POSCMOD = XT   // HS, XT, EC
+#pragma config FSOSCEN = OFF  // Disable Secondary oscillator
+#pragma config OSCIOFNC = ON  // CLKO Enable Configuration bit
+// ***********************************************
+
 
 const unsigned int baud = 9600;
-const unsigned int pbus_clock_hz = 20000000; // 20 Mhz
+const unsigned int periph_bus_clock_hz = 20000000; // 20 Mhz
 
 // Timer Values
-const unsigned int tm_period_ms = 1000;
+const unsigned int tm_period_ms = 2000;
 const tmx_prescaler_t tm_prescaler = TMx_DIV_256;
 // PR2 = 1000 (ms) / ((1/20000000) (micro sec) * 1000 * 256 (scaler)) = 7812.5
 // serve un timer a 32 bit
@@ -51,14 +64,14 @@ const unsigned int tm_subpriority = 0;
 unsigned int timer_elapsed = 0;
 
 int main(int argc, char** argv) {
-    utils_uart4_init(baud, pbus_clock_hz);
+    utils_uart4_init(baud, periph_bus_clock_hz);
     utils_uart4_puts("uart ready\r\n");
     
     utils_led_init();
     utils_uart4_puts("led ready\r\n");
     
     utils_timer23_init_32bit(
-            tm_period_ms, pbus_clock_hz, tm_prescaler, 
+            tm_period_ms, periph_bus_clock_hz, tm_prescaler, 
             tm_use_interrupt, tm_priority, tm_subpriority);
     utils_uart4_puts("timer ready\r\n");
         
