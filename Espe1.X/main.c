@@ -45,7 +45,7 @@ const tmx_prescaler_t tm_prescaler = TMx_DIV_256;
 // PR2 = 1000 (ms) / ((1/20000000) (micro sec) * 1000 * 256 (scaler)) = 7812.5
 // serve un timer a 32 bit
 const tm_use_interrupt_t tm_use_interrupt = TM_INTERRUPT_ON;
-const unsigned int tm_priority = 6;
+const unsigned int tm_priority = 1;
 const unsigned int tm_subpriority = 0;
 
 unsigned int timer_elapsed = 0;
@@ -68,11 +68,12 @@ int main(int argc, char** argv) {
         if(timer_elapsed) {
             timer_elapsed = 0;
             utils_uart4_puts("timer 23 interrupt xx\r\n");
+            utils_led_toggle(7);
         }
     }
 }
 
-void __attribute__(( interrupt(ipl6), vector(_TIMER_3_VECTOR)))
+void __attribute__(( interrupt(ipl1), vector(_TIMER_3_VECTOR)))
 timer23_int_handler(void) {
     timer_elapsed = 1;
     IFS0bits.T2IF = 0; // reset interrupt

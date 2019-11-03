@@ -2,12 +2,11 @@
 #include "utils_led.h"
 
 void utils_led_init() {
-    TRISA = 0x0000;
-    LATA = 0x0000;
+    TRISA = 0x0000;     // set all pin to OUTPUT
+    LATA = 0x0000;      // turn off all leds
 }
 
 void utils_led_toggle(int idx) {
-    LATAINV = idx;
     switch(idx) {
         case 0:
             LATAbits.LATA0 = ~LATAbits.LATA0;  //A0 corrisponde al LED0
@@ -68,7 +67,7 @@ int utils_led_get(int idx) {
     return val;
 }
 
-void utils_led_set(int idx, int value) {
+void utils_led_set(int idx, led_status_e_t value) {
     switch(idx) {
         case 0:
             // Setto il singolo bit della Port A a 1
