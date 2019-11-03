@@ -44,6 +44,10 @@ extern "C" {
             int period_ms, int bus_freq, tmx_prescaler_t prescaler, 
             tm_use_interrupt_t use_interrupt, int priority, int sub_priority);
 
+    void utils_timer23_init_32bit(
+            int period_ms, int bus_freq, tmx_prescaler_t prescaler, 
+            tm_use_interrupt_t use_interrupt, int priority, int sub_priority);
+    
 #ifdef	__cplusplus
 }
 #endif

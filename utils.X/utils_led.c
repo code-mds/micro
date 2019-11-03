@@ -10,7 +10,6 @@ void utils_led_toggle(int idx) {
     LATAINV = idx;
     switch(idx) {
         case 0:
-            // Setto il singolo bit della Port A a 1
             LATAbits.LATA0 = ~LATAbits.LATA0;  //A0 corrisponde al LED0
             break;               
         case 1:
@@ -41,7 +40,7 @@ int utils_led_get(int idx) {
     int val = 0;
     switch(idx) {
         case 0:
-            // Setto il singolo bit della Port A a 1
+            // Leggo il singolo bit della Port A
             val = LATAbits.LATA0;  //A0 corrisponde al LED0
             break;               
         case 1:
