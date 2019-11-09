@@ -52,15 +52,15 @@ const unsigned int periph_bus_clock_hz = 20000000; // 20 Mhz
 
 void init_timer() {
     // Timer Values
-    const unsigned int tm_period_ms = 200;
+    const unsigned int tm_period_ms = 1000;
     const tmx_prescaler_t tm_prescaler = TMx_DIV_256;
-    // PR2 = 500 (ms) / ((1/20000000) (micro sec) * 1000 * 256 (scaler)) 
-    // = 39062.5 > (2^16-1) (65535), serve un timer a 16 bit
+    // PR2 = 1000 (ms) / ((1/20000000) (micro sec) * 1000 * 256 (scaler)) 
+    // = 78125 > (2^16-1) (65535), serve un timer a 32 bit
     const tm_use_interrupt_t tm_use_interrupt = TM_INTERRUPT_ON;
     const unsigned int tm_priority = 1;
     const unsigned int tm_subpriority = 0;
 
-    utils_timer2_init(
+    utils_timer23_init_32bit(
             tm_period_ms, periph_bus_clock_hz, tm_prescaler, 
             tm_use_interrupt, tm_priority, tm_subpriority);
     utils_uart4_puts("timer ready\r\n");
@@ -78,15 +78,16 @@ void init_leds() {
 }
 
 int _timer_elapsed = 0;
+
 void main() {
     utils_common_macro_enable_interrupts();
 
     init_uart4();
-    utils_uart4_puts("******** Espe1 ********\r\n");
+    utils_uart4_puts("******** Test Timer 32 bit ********\r\n");
     init_leds();
     init_timer();
-    utils_uart4_puts("***********************\r\n"); 
-            
+    utils_uart4_puts("***********************************\r\n"); 
+    
     while(1) {  
         if(_timer_elapsed) {
             utils_uart4_puts(".");
@@ -95,8 +96,9 @@ void main() {
     }
 }
 
-void __attribute__(( interrupt(ipl1), vector(_TIMER_2_VECTOR)))
-timer2_int_handler(void) {
+void __attribute__(( interrupt(ipl1), vector(_TIMER_3_VECTOR)))
+timer23_int_handler(void) {
     _timer_elapsed = 1;
     IFS0bits.T2IF = 0; // reset interrupt
+    IFS0bits.T3IF = 0; // reset interrupt
 }

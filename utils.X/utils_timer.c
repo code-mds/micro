@@ -47,6 +47,8 @@ void utils_timer2_init(
 
 // TIMER 2/3: 32 bit    
 // - use _TIMER_3_VECTOR for interrupt, need to reset IFS0bits.T3IF and T2IF
+// the 32-bit timer is controlled by the even number timer control registers (e.g. Timer2) 
+// When an interrupt event occurs, the odd number timer generates the event (e.g. Timer3)
 void utils_timer23_init_32bit(
         int period_ms, int bus_freq, tmx_prescaler_t prescaler, 
         tm_use_interrupt_t use_interrupt, int priority, int sub_priority) {
@@ -59,8 +61,9 @@ void utils_timer23_init_32bit(
     // reset counters to 0
     TMR2 = 0;   
     TMR3 = 0;
+    
+    // Load the period register PRx with the desired 32-bit match value
     PR2 = calc_pr(period_ms, bus_freq, tmx_prescaler_vals[prescaler]);
-    //PR3 = PR2;
     
     // configure interrupt
     IEC0bits.T3IE = 0;
@@ -74,7 +77,8 @@ void utils_timer23_init_32bit(
 
 // Calc Period Registration
 int calc_pr(int period_ms, int bus_freq, int prescaler_val) {
-   return  period_ms / ( (1.0/bus_freq) * 1000 * prescaler_val);
+   int ms_to_micros = 1000;
+   return  period_ms / ( (1.0/bus_freq) * ms_to_micros * prescaler_val);
 }
 
 int calc_pr_16bit(int period_ms, int bus_freq, int prescaler_val) {

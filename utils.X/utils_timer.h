@@ -11,19 +11,19 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-    typedef enum tm_use_interrupt_e { 
+    typedef enum { 
         TM_INTERRUPT_OFF = 0,
         TM_INTERRUPT_ON = 1
     } tm_use_interrupt_t;
     
-    typedef enum tm1_prescaler_e { 
+    typedef enum { 
         TM1_DIV_1 = 0b00, 
         TM1_DIV_8 = 0b01, 
         TM1_DIV_64 = 0b10, 
         TM1_DIV_256 = 0b11 
     } tm1_prescaler_t;
     
-    typedef enum tmx_prescaler_e { 
+    typedef enum { 
         TMx_DIV_1 = 0b000, 
         TMx_DIV_2 = 0b001, 
         TMx_DIV_4 = 0b010, 

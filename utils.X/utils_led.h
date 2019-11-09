@@ -11,7 +11,7 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-    typedef enum led_status_e { 
+    typedef enum { 
         LED_OFF = 0,
         LED_ON = 1
     } led_status_e_t;

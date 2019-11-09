@@ -52,15 +52,15 @@ const unsigned int periph_bus_clock_hz = 20000000; // 20 Mhz
 
 void init_timer() {
     // Timer Values
-    const unsigned int tm_period_ms = 200;
+    const unsigned int tm_period_ms = 500;
     const tmx_prescaler_t tm_prescaler = TMx_DIV_256;
-    // PR2 = 500 (ms) / ((1/20000000) (micro sec) * 1000 * 256 (scaler)) 
-    // = 39062.5 > (2^16-1) (65535), serve un timer a 16 bit
+    // PR2 = 500 (ms) / ((1/20000) (ms) * 256 (scaler)) 
+    // = 39062.5 < (2^16-1) (65535), serve un timer a 16 bit
     const tm_use_interrupt_t tm_use_interrupt = TM_INTERRUPT_ON;
     const unsigned int tm_priority = 1;
     const unsigned int tm_subpriority = 0;
 
-    utils_timer2_init(
+    utils_timer2_init (
             tm_period_ms, periph_bus_clock_hz, tm_prescaler, 
             tm_use_interrupt, tm_priority, tm_subpriority);
     utils_uart4_puts("timer ready\r\n");
@@ -77,20 +77,82 @@ void init_leds() {
     utils_uart4_puts("led ready\r\n");
 }
 
+typedef enum { 
+    action_get_op, 
+    action_led_on, 
+    action_led_off 
+} action_t;
+
+action_t _current_action = action_get_op;
+
 int _timer_elapsed = 0;
+int _next_led = 0;
+
+void get_operation() {
+    char buffer[30];
+    memset(buffer, 0, 30);
+    
+    utils_uart4_gets(buffer, 30);
+
+    if(strcmp(buffer, "ledon") == 0) {
+        utils_uart4_puts("leds turning on\r\n");
+        _current_action = action_led_on;
+    } else if(strcmp(buffer, "ledoff") == 0) {
+        utils_uart4_puts("leds turning off\r\n");
+        _current_action = action_led_off;
+    } else {
+        utils_uart4_puts("command unknown\r\n");
+    }
+}
+
+void turn_led_on() {
+    if(_timer_elapsed) {
+        _timer_elapsed = 0;
+
+        if(_next_led < 8) {
+            utils_led_toggle(_next_led);
+            _next_led++; 
+        } else {
+            utils_uart4_puts("all leds on\r\n");
+            _current_action = action_get_op;
+        }
+    }
+}
+
+void turn_led_off() {
+     if(_timer_elapsed) {
+         _timer_elapsed = 0;
+
+        if(_next_led >= 0) {
+            utils_led_toggle(_next_led);
+            _next_led--; 
+        } else {
+            utils_uart4_puts("all leds off\r\n");
+            _current_action = action_get_op;
+        }
+    }
+}
+
 void main() {
     utils_common_macro_enable_interrupts();
 
     init_uart4();
-    utils_uart4_puts("******** Espe1 ********\r\n");
+    utils_uart4_puts("******** serie_4_ch5 ********\r\n");
     init_leds();
     init_timer();
-    utils_uart4_puts("***********************\r\n"); 
-            
-    while(1) {  
-        if(_timer_elapsed) {
-            utils_uart4_puts(".");
-            _timer_elapsed = 0;
+    utils_uart4_puts("******** commands: ledon|ledoff ********\r\n");
+    
+    while(1) {
+        switch(_current_action) {
+            case action_get_op: 
+                get_operation();
+                break;
+            case action_led_on:
+                turn_led_on();
+                break;
+            case action_led_off:
+                turn_led_off();
+                break;
         }
     }
 }
