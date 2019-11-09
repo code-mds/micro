@@ -52,8 +52,8 @@ void main() {
     utils_uart4_puts("led ready\r\n");
     
     utils_timer2_init(
-            tm_period, pbus_clock, tmx_prescaler_t.TMx_DIV_256, 
-            tm_use_interrupt_t.TM_INTERRUPT_ON, 6, 0);
+            tm_period, pbus_clock, TMx_DIV_256, 
+            INTERRUPT_ON, 6, 0);
     utils_uart4_puts("timer ready\r\n");
         
 
@@ -67,7 +67,7 @@ void main() {
     }
 }
 
-void __attribute__(( interrupt(ipl6), vector(_TIMER_2_VECTOR)))
+void __attribute__(( interrupt(ipl6auto), vector(_TIMER_2_VECTOR)))
 timer2_int_handler(void) {
     timer_elapsed = 1;
     IFS0bits.T2IF = 0; // reset interrupt

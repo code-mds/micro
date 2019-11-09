@@ -11,10 +11,13 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-
     void utils_common_delay(int counter);
     void utils_common_tolower(char* str);
     
+    typedef enum { 
+        INTERRUPT_OFF = 0,
+        INTERRUPT_ON = 1
+    } use_interrupt_t;
     
 // Macro Per Interrupt   
 #define utils_common_macro_enable_interrupts()\

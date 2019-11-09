@@ -35,7 +35,6 @@
 const unsigned int baud = 9600;             // 9600 bit/s
 const unsigned int pbus_clock = 20000000;   // 20 MHz
 const unsigned int tm2_period = 500;        // 500 ms
-const unsigned tmx_prescaler_t tm2_prescaler = TMx_DIV_256;
 //PR2 = 500 / ((1/20000000) * 1000 * 256) = 39063
 
 void es1();
@@ -51,8 +50,8 @@ void main() {
     utils_uart4_puts("led ready\r\n");
     
     utils_timer2_init(
-            tm2_period, pbus_clock, tm2_prescaler, 
-            TM_INTERRUPT_OFF, 6, 0);
+            tm2_period, pbus_clock, TMx_DIV_256, 
+            INTERRUPT_OFF, 6, 0);
     utils_uart4_puts("timer ready\r\n");
     
     //es1();

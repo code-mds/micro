@@ -53,16 +53,14 @@ const unsigned int periph_bus_clock_hz = 20000000; // 20 Mhz
 void init_timer() {
     // Timer Values
     const unsigned int tm_period_ms = 200;
-    const tmx_prescaler_t tm_prescaler = TMx_DIV_256;
     // PR2 = 500 (ms) / ((1/20000000) (micro sec) * 1000 * 256 (scaler)) 
     // = 39062.5 > (2^16-1) (65535), serve un timer a 16 bit
-    const tm_use_interrupt_t tm_use_interrupt = TM_INTERRUPT_ON;
     const unsigned int tm_priority = 1;
     const unsigned int tm_subpriority = 0;
 
     utils_timer2_init(
-            tm_period_ms, periph_bus_clock_hz, tm_prescaler, 
-            tm_use_interrupt, tm_priority, tm_subpriority);
+            tm_period_ms, periph_bus_clock_hz, TMx_DIV_256, 
+            INTERRUPT_ON, tm_priority, tm_subpriority);
     utils_uart4_puts("timer ready\r\n");
 }
 
@@ -95,7 +93,7 @@ void main() {
     }
 }
 
-void __attribute__(( interrupt(ipl1), vector(_TIMER_2_VECTOR)))
+void __attribute__(( interrupt(ipl1auto), vector(_TIMER_2_VECTOR)))
 timer2_int_handler(void) {
     _timer_elapsed = 1;
     IFS0bits.T2IF = 0; // reset interrupt
