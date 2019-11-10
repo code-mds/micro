@@ -15,7 +15,7 @@ extern "C" {
 #endif
     void utils_uart4_init(int baud, int pbus_clock);
     void utils_uart4_init_interrupt(int baud, int pbus_clock, 
-        use_interrupt_t use_interrupt, int priority, int sub_priority);
+        boolean_t use_interrupt, int priority, int sub_priority);
     
     int utils_uart4_putc(int c);
     char utils_uart4_getc(void);

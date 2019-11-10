@@ -7,14 +7,14 @@ void utils_uart4_config_pins();
 void utils_uart4_config_uart(int baud, int pbusClock);
 
 void utils_uart4_init(int baud, int pbus_clock) {
-    utils_uart4_init_interrupt(baud, pbus_clock, INTERRUPT_OFF, 0, 0);
+    utils_uart4_init_interrupt(baud, pbus_clock, FALSE ,0, 0);
 }
 
 void utils_uart4_init_interrupt(int baud, int pbus_clock, 
-    use_interrupt_t use_interrupt, int priority, int sub_priority) {
+    boolean_t use_interrupt, int priority, int sub_priority) {
     utils_uart4_config_pins();
     utils_uart4_config_uart(baud, pbus_clock);
-    if(use_interrupt == INTERRUPT_ON) {
+    if(use_interrupt) {
         // Micro Data Sheet - Tabella 7.2 INTERRUPT REGISTER MAP
         IPC9bits.U4IP = priority;  
         IPC9bits.U4IS = sub_priority;
@@ -30,12 +30,12 @@ void utils_uart4_config_pins() {
     //          Serial Comm, Timer, Interrupt on change
     
     // Table 12-2 Data Sheet - OUTPUT PIN SELECTION
-    TRISFbits.TRISF12 = 0;  // TX digital OUTPUT
-    RPF12R = 0b0010;        // mapping U4TX (0010) to RPF12 
+    TRISFbits.TRISF12 = OUTPUT;  // TX digital OUTPUT
+    RPF12R = 0b0010;             // mapping U4TX (0010) to RPF12 
 
     // Table 12-1 Data Sheet - INPUT PIN SELECTION
-    TRISFbits.TRISF13 = 1;  // RX digital INPUT
-    U4RXR = 0b1001;         // mapping RPF13 (1001) to U4RX
+    TRISFbits.TRISF13 = INPUT;  // RX digital INPUT
+    U4RXR = 0b1001;             // mapping RPF13 (1001) to U4RX
 }
 
 void utils_uart4_config_uart(int baud, int periph_bus_clock_hz) {

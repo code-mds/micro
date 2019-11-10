@@ -11,7 +11,7 @@ int tmx_prescaler_vals[] = {1, 2, 4, 8, 16, 32, 64, 256};
 // - use _TIMER_1_VECTOR for interrupt, need to reset IFS0bits.T1IF
 void utils_timer1_init(
         int period_ms, int bus_freq, tm1_prescaler_t prescaler, 
-        use_interrupt_t use_interrupt, int priority, int sub_priority) {
+        boolean_t use_interrupt, int priority, int sub_priority) {
     T1CON = 0x00;                   // STOP timer 1 and reset configuration 
     T1CONbits.TCKPS = prescaler;    // set prescaler
     TMR1 = 0;                       // reset counters to 0
@@ -29,15 +29,15 @@ void utils_timer1_init(
 // - use _TIMER_2_VECTOR for interrupt, need to reset IFS0bits.T2IF
 void utils_timer2_init(
         int period_ms, int bus_freq, tmx_prescaler_t prescaler, 
-        use_interrupt_t use_interrupt, int priority, int sub_priority) {
+        boolean_t use_interrupt, int priority, int sub_priority) {
     T2CON = 0x00;                   // STOP timer 2 and reset configuration            
     T2CONbits.TCKPS = prescaler;    // set prescaler
     TMR2 = 0;                       // reset counters to 0 
     PR2 = calc_pr_16bit(period_ms, bus_freq, tmx_prescaler_vals[prescaler]);
     
     // configure interrupt
-    IEC0bits.T2IE = 0;
-    IFS0bits.T2IF = 0; //Interrupt flag putted at zero
+    IEC0bits.T2IE = 0; // disable interrupt
+    IFS0bits.T2IF = 0; //Interrupt flag put at zero
     IPC2bits.T2IP = priority;
     IPC2bits.T2IS = sub_priority;
     IEC0bits.T2IE = use_interrupt;
@@ -51,7 +51,7 @@ void utils_timer2_init(
 // When an interrupt event occurs, the odd number timer generates the event (e.g. Timer3)
 void utils_timer23_init_32bit(
         int period_ms, int bus_freq, tmx_prescaler_t prescaler, 
-        use_interrupt_t use_interrupt, int priority, int sub_priority) {
+        boolean_t use_interrupt, int priority, int sub_priority) {
     T2CON = 0x00; // STOP timer2 and reset configuration
     T3CON = 0x00; // STOP timer3 and reset configuration
 

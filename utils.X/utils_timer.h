@@ -34,16 +34,16 @@ extern "C" {
     // prescaler 0..3: 1,8,64,256
     void utils_timer1_init(
             int period_ms, int bus_freq, tm1_prescaler_t prescaler, 
-            use_interrupt_t use_interrupt, int priority, int sub_priority);
+            boolean_t use_interrupt, int priority, int sub_priority);
     
     // prescaler 0..7: 1,2,4,8,16,32,64,256
     void utils_timer2_init(
             int period_ms, int bus_freq, tmx_prescaler_t prescaler, 
-            use_interrupt_t use_interrupt, int priority, int sub_priority);
+            boolean_t use_interrupt, int priority, int sub_priority);
 
     void utils_timer23_init_32bit(
             int period_ms, int bus_freq, tmx_prescaler_t prescaler, 
-            use_interrupt_t use_interrupt, int priority, int sub_priority);
+            boolean_t use_interrupt, int priority, int sub_priority);
     
 #ifdef	__cplusplus
 }
