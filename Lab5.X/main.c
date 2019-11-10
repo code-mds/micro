@@ -54,9 +54,8 @@ const char* CMD_LED_OFF = "ledoff";
 
 void init_uart4() {
     const unsigned int baud = 9600;
-    const unsigned int priority = 6;
-    const unsigned int subpriority = 3;
-    utils_uart4_init_interrupt(baud, periph_bus_clock_hz, TRUE, priority, subpriority);
+    utils_uart4_init_interrupt(baud, periph_bus_clock_hz, 
+            TRUE, INT_PRIORITY_6, INT_SUB_PRIORITY_3);
     utils_uart4_puts("uart ready\r\n");
 }
 
@@ -65,12 +64,9 @@ void init_timer() {
     const unsigned int tm_period_ms = 500;
     // PR2 = 500 (ms) / ((1/20000) (ms) * 256 (scaler)) 
     // = 39062.5 < (2^16-1) (65535), serve un timer a 16 bit
-    const unsigned int tm_priority = 1;
-    const unsigned int tm_subpriority = 0;
-
     utils_timer2_init (
             tm_period_ms, periph_bus_clock_hz, TMx_DIV_256, 
-            TRUE, tm_priority, tm_subpriority);
+            TRUE, INT_PRIORITY_1, INT_SUB_PRIORITY_0);
     utils_uart4_puts("timer ready\r\n");
 }
 
@@ -81,18 +77,12 @@ void init_leds() {
 }
 
 void init_switch() {
-    const unsigned int sw_priority = 1;
-    const unsigned int sw_subpriority = 2;
-
-    utils_switch_init_sw0_interrupt_cn(sw_priority, sw_subpriority);       
+    utils_switch_init_sw0_interrupt_cn(INT_PRIORITY_1, INT_SUB_PRIORITY_2);       
     utils_uart4_puts("switch ready\r\n");
 }
 
 void init_button() {
-    const unsigned int priority = 1;
-    const unsigned int subpriority = 3;
-
-    utils_button_init_btn_c(TRUE, priority, subpriority);
+    utils_button_init_btn_c(TRUE, INT_PRIORITY_2, INT_SUB_PRIORITY_3);
     
     utils_uart4_puts("button ready\r\n");
 }
@@ -105,20 +95,22 @@ typedef enum {
 
 action_t _current_action = action_get_op;
 
-int _timer_elapsed = FALSE;
-int _next_led = 0;
-char _command[30];
-int  _new_char_pos = 0;
-int  _new_word = FALSE;
+int     _timer_elapsed = FALSE;
+int     _next_led = 0;
+char    _command[30];
+int     _new_char_pos = 0;
+int     _new_word = FALSE;
+int     _btn_toggle = FALSE;
 
 void get_operation() {
     //utils_uart4_gets(_command, 30);
-    
     if(_new_word) {
-        if(strcmp(_command, CMD_LED_ON) == 0) {
+        utils_uart4_puts("START\r\n");
+        
+        if(strncmp(_command, CMD_LED_ON, strlen(CMD_LED_ON)) == 0) {
             utils_uart4_puts("leds turning on\r\n");
             _current_action = action_led_on;
-        } else if(strcmp(_command, CMD_LED_OFF) == 0) {
+        } else if(strncmp(_command, CMD_LED_OFF, strlen(CMD_LED_OFF)) == 0) {
             utils_uart4_puts("leds turning off\r\n");
             _current_action = action_led_off;
         } else {
@@ -163,11 +155,11 @@ void main() {
     
     init_uart4();
     utils_uart4_puts("******** serie_4_ch5 ********\r\n");
-    
+    init_button();
+
     init_leds();
     init_timer();
     init_switch();
-    init_button();
     
     utils_uart4_puts("******** commands: ledon|ledoff ********\r\n");
     memset(_command, 0, 30);
@@ -215,12 +207,14 @@ SW0ChangeNotificationHandler(void){
     IFS1bits.CNFIF = 0;
 }
 
-void __attribute__((interrupt(ipl1auto), vector(_EXTERNAL_2_VECTOR)))
+void __attribute__((interrupt(ipl2auto), vector(_EXTERNAL_4_VECTOR)))
 ButtonCHandler(void){
-    int value = PORTFbits.RF0;
-    strcpy(_command, value ? CMD_LED_ON : CMD_LED_OFF);
+    int val = PORTFbits.RF0;
+    utils_uart4_putc('.');
+    _btn_toggle = ~_btn_toggle;
+    strcpy(_command, _btn_toggle ? CMD_LED_ON : CMD_LED_OFF);
     _new_word = TRUE;
 
-    IFS0bits.INT2IF = 0;       // clear interrupt flag
+    IFS0bits.INT4IF = 0;       // clear interrupt flag
 }
 

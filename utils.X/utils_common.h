@@ -28,7 +28,26 @@ extern "C" {
         DIGITAL = 0,
         ANALOG = 1
     } digital_t;
-    
+  
+    typedef enum {
+        INT_PRIORITY_DISABLED = 0,
+        INT_PRIORITY_1 = 1,
+        INT_PRIORITY_2 = 2,
+        INT_PRIORITY_3 = 3,
+        INT_PRIORITY_4 = 4,
+        INT_PRIORITY_5 = 5,
+        INT_PRIORITY_6 = 6,
+        INT_PRIORITY_7 = 7
+    } int_priority_t;
+
+    typedef enum {
+        INT_SUB_PRIORITY_DISABLED = 0,
+        INT_SUB_PRIORITY_0 = 0,
+        INT_SUB_PRIORITY_1 = 1,
+        INT_SUB_PRIORITY_2 = 2,
+        INT_SUB_PRIORITY_3 = 3
+    } int_subpriority_t;
+
 // Macro Per Interrupt   
 #define utils_common_macro_enable_interrupts()\
 {   unsigned int val = 0;\

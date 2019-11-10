@@ -9,14 +9,14 @@ void utils_button_init_btn_c(boolean_t use_interrupt, int priority,
 
     // Enable interupt for Button C
     if(use_interrupt) {
-        // External Interrupt 2 remap RF0 (Button C)
-        INT2R = 0b0101; 
-        INTCONbits.INT2EP = 1;
+        // External Interrupt 4 remap RF0 (Button C)
+        IEC0bits.INT4IE = 0;
+        INT4R = 0b0100; 
         
-        IPC2bits.INT2IP = priority;
-        IPC2bits.INT2IS = sub_priority;
-        IFS0bits.INT2IF = 0;    // clear interrupt flag
-        IEC0bits.INT2IE = 1;    // enable interrupt
+        IPC4bits.INT4IP = priority;
+        IPC4bits.INT4IS = sub_priority;
+        IFS0bits.INT4IF = 0;    // clear interrupt flag
+        IEC0bits.INT4IE = 1;    // enable interrupt
     }
 }
 
