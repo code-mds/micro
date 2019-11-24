@@ -1,8 +1,6 @@
 /* 
  * File:   main.c
  * Author: massi
- *
- * Created on 2. novembre 2019, 10:35
  */
 
 #include <stdio.h>
@@ -13,10 +11,8 @@
 #include <p32xxxx.h>
 
 #include "../utils.X/utils_common.h"
-#include "../utils.X/utils_uart.h"
-#include "../utils.X/utils_led.h"
-#include "../utils.X/utils_switch.h"
 #include "../utils.X/utils_timer.h"
+#include "../utils.X/utils_lcd.h"
 
 // Joint Test Action Group (JTAG) interface
 #pragma config JTAGEN = OFF     // Disable JTAG
@@ -50,51 +46,23 @@
 
 const unsigned int periph_bus_clock_hz = 20000000; // 20 Mhz
 
-void init_timer() {
-    // Timer Values
-    const unsigned int tm_period_ms = 200;
-    // PR2 = 500 (ms) / ((1/20000000) (micro sec) * 1000 * 256 (scaler)) 
-    // = 39062.5 > (2^16-1) (65535), serve un timer a 16 bit
-    const unsigned int tm_priority = 1;
-    const unsigned int tm_subpriority = 0;
-
-    utils_timer2_init(
-            tm_period_ms, periph_bus_clock_hz, TMx_DIV_256, 
-            INTERRUPT_ON, tm_priority, tm_subpriority);
-    utils_uart4_puts("timer ready\r\n");
-}
-
-void init_uart4() {
-    const unsigned int baud = 9600;
-    utils_uart4_init(baud, periph_bus_clock_hz);
-    utils_uart4_puts("uart ready\r\n");
-}
-
-void init_leds() {
-    utils_led_init();
-    utils_uart4_puts("led ready\r\n");
-}
-
-int _timer_elapsed = 0;
 void main() {
-    utils_common_macro_enable_interrupts();
+    utils_lcd_init(periph_bus_clock_hz, TM1_DIV_256);
+    utils_lcd_write_str("Massimo");
+    
+    int counter = 0;
+    char buffer[10];
+    memset(buffer, 0, 10);
 
-    init_uart4();
-    utils_uart4_puts("******** Espe1 ********\r\n");
-    init_leds();
-    init_timer();
-    utils_uart4_puts("***********************\r\n"); 
-            
-    while(1) {  
-        if(_timer_elapsed) {
-            utils_uart4_puts(".");
-            _timer_elapsed = 0;
-        }
+    while(1) {
+        // 0x80	// set DDRAM position command
+        utils_lcd_cmd(0x80 | 0x40);    //cursore inizio seconda riga
+        utils_lcd_write_str("Serie6");
+        utils_lcd_cmd(0x80 | 0x47);    //cursore inizio seconda riga
+        
+        sprintf(buffer, "%d", counter);
+        utils_lcd_write_str(buffer);
+        counter++;
+        utils_timer1_delay(1000, periph_bus_clock_hz, TM1_DIV_256);
     }
-}
-
-void __attribute__(( interrupt(ipl1auto), vector(_TIMER_2_VECTOR)))
-timer2_int_handler(void) {
-    _timer_elapsed = 1;
-    IFS0bits.T2IF = 0; // reset interrupt
 }

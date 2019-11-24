@@ -2,7 +2,6 @@
  * File:   main.c
  * Author: massi
  *
- * Created on 2. novembre 2019, 10:35
  */
 
 #include <stdio.h>
