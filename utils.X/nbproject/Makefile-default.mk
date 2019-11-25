@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=utils_led.c utils_switch.c utils_uart.c utils_timer.c utils_common.c utils_button.c utils_lcd.c
+SOURCEFILES_QUOTED_IF_SPACED=utils_led.c utils_switch.c utils_uart.c utils_timer.c utils_common.c utils_button.c utils_lcd.c utils_adc.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/utils_led.o ${OBJECTDIR}/utils_switch.o ${OBJECTDIR}/utils_uart.o ${OBJECTDIR}/utils_timer.o ${OBJECTDIR}/utils_common.o ${OBJECTDIR}/utils_button.o ${OBJECTDIR}/utils_lcd.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/utils_led.o.d ${OBJECTDIR}/utils_switch.o.d ${OBJECTDIR}/utils_uart.o.d ${OBJECTDIR}/utils_timer.o.d ${OBJECTDIR}/utils_common.o.d ${OBJECTDIR}/utils_button.o.d ${OBJECTDIR}/utils_lcd.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/utils_led.o ${OBJECTDIR}/utils_switch.o ${OBJECTDIR}/utils_uart.o ${OBJECTDIR}/utils_timer.o ${OBJECTDIR}/utils_common.o ${OBJECTDIR}/utils_button.o ${OBJECTDIR}/utils_lcd.o ${OBJECTDIR}/utils_adc.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/utils_led.o.d ${OBJECTDIR}/utils_switch.o.d ${OBJECTDIR}/utils_uart.o.d ${OBJECTDIR}/utils_timer.o.d ${OBJECTDIR}/utils_common.o.d ${OBJECTDIR}/utils_button.o.d ${OBJECTDIR}/utils_lcd.o.d ${OBJECTDIR}/utils_adc.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/utils_led.o ${OBJECTDIR}/utils_switch.o ${OBJECTDIR}/utils_uart.o ${OBJECTDIR}/utils_timer.o ${OBJECTDIR}/utils_common.o ${OBJECTDIR}/utils_button.o ${OBJECTDIR}/utils_lcd.o
+OBJECTFILES=${OBJECTDIR}/utils_led.o ${OBJECTDIR}/utils_switch.o ${OBJECTDIR}/utils_uart.o ${OBJECTDIR}/utils_timer.o ${OBJECTDIR}/utils_common.o ${OBJECTDIR}/utils_button.o ${OBJECTDIR}/utils_lcd.o ${OBJECTDIR}/utils_adc.o
 
 # Source Files
-SOURCEFILES=utils_led.c utils_switch.c utils_uart.c utils_timer.c utils_common.c utils_button.c utils_lcd.c
+SOURCEFILES=utils_led.c utils_switch.c utils_uart.c utils_timer.c utils_common.c utils_button.c utils_lcd.c utils_adc.c
 
 
 
@@ -149,6 +149,12 @@ ${OBJECTDIR}/utils_lcd.o: utils_lcd.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/utils_lcd.o 
 	@${FIXDEPS} "${OBJECTDIR}/utils_lcd.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/utils_lcd.o.d" -o ${OBJECTDIR}/utils_lcd.o utils_lcd.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
+${OBJECTDIR}/utils_adc.o: utils_adc.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/utils_adc.o.d 
+	@${RM} ${OBJECTDIR}/utils_adc.o 
+	@${FIXDEPS} "${OBJECTDIR}/utils_adc.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_PK3=1  -fframe-base-loclist  -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/utils_adc.o.d" -o ${OBJECTDIR}/utils_adc.o utils_adc.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
 else
 ${OBJECTDIR}/utils_led.o: utils_led.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -191,6 +197,12 @@ ${OBJECTDIR}/utils_lcd.o: utils_lcd.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/utils_lcd.o.d 
 	@${RM} ${OBJECTDIR}/utils_lcd.o 
 	@${FIXDEPS} "${OBJECTDIR}/utils_lcd.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/utils_lcd.o.d" -o ${OBJECTDIR}/utils_lcd.o utils_lcd.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
+	
+${OBJECTDIR}/utils_adc.o: utils_adc.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/utils_adc.o.d 
+	@${RM} ${OBJECTDIR}/utils_adc.o 
+	@${FIXDEPS} "${OBJECTDIR}/utils_adc.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CC}  $(MP_EXTRA_CC_PRE)  -g -x c -c -mprocessor=$(MP_PROCESSOR_OPTION)  -MMD -MF "${OBJECTDIR}/utils_adc.o.d" -o ${OBJECTDIR}/utils_adc.o utils_adc.c    -DXPRJ_default=$(CND_CONF)  -legacy-libc  $(COMPARISON_BUILD) 
 	
 endif
 
