@@ -51,7 +51,7 @@ void utils_lcd_config_pins()
 }
 
 void utils_lcd_init(int bus_freq, int prescaler) {
-    utils_lcd_config_pins();
+    //utils_lcd_config_pins();
     
     // default (IO) function for remapable pins
     RPB15R = 0;  // rp_LCD_DISP_RS = 0;

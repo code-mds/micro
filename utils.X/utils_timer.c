@@ -90,7 +90,8 @@ int calc_pr(int period_ms, int bus_freq, int prescaler_val) {
 int calc_pr_16bit(int period_ms, int bus_freq, int prescaler_val) {
     unsigned int pr = calc_pr(period_ms, bus_freq, prescaler_val);
     if(pr > 0xFFFF) {
-        int wrong_config = 1;
+        printf("required PR doesn't fit in 16bit");
+        int a = 1/0;
     }
     return pr;
 }

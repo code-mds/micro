@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
 #include <p32xxxx.h>
 
 #include "../utils.X/utils_common.h"
@@ -36,7 +35,8 @@
 #pragma config FNOSC = FRCPLL // FRCPLL: Internal Fast RC oscillator
 
 // FPBDIV Postscaler: Peripheral Bus Clock Divisor
-#pragma config FPBDIV = DIV_2 // Peripheral Bus Clock = SYS clock / 2 = 20Mhz
+//#pragma config FPBDIV = DIV_2 // Peripheral Bus Clock = SYS clock / 2 = 20Mhz
+#pragma config FPBDIV = DIV_4 // Peripheral Bus Clock = SYS clock / 4 = 10Mhz
 
 // POSC: Primary Oscillator, ha effetto sul USB Clock
 #pragma config POSCMOD = XT   // HS, XT, EC
@@ -44,12 +44,18 @@
 #pragma config OSCIOFNC = ON  // CLKO Enable Configuration bit
 // ***********************************************
 
-const unsigned int periph_bus_clock_hz = 20000000; // 20 Mhz
+const unsigned int periph_bus_clock_hz = 10000000; // 10 Mhz
+
+void _general_exception_handler(unsigned cause, unsigned status) {    
+}
 
 void main() {
-    utils_lcd_init(periph_bus_clock_hz, TM1_DIV_256);
+    tm1_prescaler_t prescaler = TM1_DIV_256;
+    utils_timer1_delay(1000, periph_bus_clock_hz, prescaler);
+
+    utils_lcd_init(periph_bus_clock_hz, prescaler);
     utils_lcd_write_str("Massimo");
-    
+
     int counter = 0;
     char buffer[10];
     memset(buffer, 0, 10);
@@ -58,11 +64,12 @@ void main() {
         // 0x80	// set DDRAM position command
         utils_lcd_cmd(0x80 | 0x40);    //cursore inizio seconda riga
         utils_lcd_write_str("Serie6");
-        utils_lcd_cmd(0x80 | 0x47);    //cursore inizio seconda riga
-        
+        utils_lcd_cmd(0x80 | 0x40 | 0x07);    //cursore inizio seconda riga
+
         sprintf(buffer, "%d", counter);
         utils_lcd_write_str(buffer);
         counter++;
-        utils_timer1_delay(1000, periph_bus_clock_hz, TM1_DIV_256);
+        utils_timer1_delay(500, periph_bus_clock_hz, prescaler);
+        utils_timer1_delay(500, periph_bus_clock_hz, prescaler);
     }
 }
