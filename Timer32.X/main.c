@@ -59,7 +59,7 @@ void init_timer() {
 
     utils_timer23_init_32bit(
             tm_period_ms, periph_bus_clock_hz, TMx_DIV_256, 
-            INTERRUPT_ON, tm_priority, tm_subpriority);
+            TRUE, tm_priority, tm_subpriority);
     utils_uart4_puts("timer ready\r\n");
 }
 

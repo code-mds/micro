@@ -53,7 +53,7 @@ void main() {
     
     utils_timer2_init(
             tm_period, pbus_clock, TMx_DIV_256, 
-            INTERRUPT_ON, 6, 0);
+            TRUE, 6, 0);
     utils_uart4_puts("timer ready\r\n");
         
 
