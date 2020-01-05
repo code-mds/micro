@@ -59,7 +59,7 @@ void utils_audio_beep_stop() {
 }
 
 void __attribute__(( interrupt(ipl7auto), vector(_TIMER_3_VECTOR)))
-timer3_int_handler(void) {
+audio_timer3_int_handler(void) {
     OC1RS = 4 * rgSinSamples[(++idxAudioBuf) % cntAudioBuf];
     IFS0bits.T3IF = 0;
 }

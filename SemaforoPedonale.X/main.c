@@ -14,6 +14,7 @@
 #include "../utils.X/utils_lcd.h"
 #include "../utils.X/utils_led.h"
 #include "../utils.X/utils_audio.h"
+#include "../utils.X/utils_rgb.h"
 
 // Joint Test Action Group (JTAG) interface
 #pragma config JTAGEN = OFF     // Disable JTAG
@@ -62,6 +63,7 @@ typedef enum {
     off
 } stato_sem_t;
 
+char buffer[10];
 stato_sem_t stato_sem = verde;
 int TG = 3;
 int TR = 5;
@@ -75,6 +77,21 @@ timer1_int_handler(void) {
 }
 
 void rgb(stato_sem_t stato_sem) {
+    switch(stato_sem) {
+        case verde:
+            utils_rgb_set(0, 255, 0); 
+            break;
+        case rosso:
+            utils_rgb_set(255, 0, 0); 
+            break;
+        case blu_config:
+            utils_rgb_set(0, 0, 255); 
+            break;
+        case giallo:
+            utils_rgb_set(255, 255, 0); 
+            break;
+    }
+
     utils_led_set(verde, stato_sem == verde ? LED_ON : LED_OFF);
     utils_led_set(giallo, stato_sem == giallo ? LED_ON : LED_OFF);
     utils_led_set(rosso, stato_sem == rosso ? LED_ON : LED_OFF);
@@ -82,42 +99,45 @@ void rgb(stato_sem_t stato_sem) {
 }
 
 void sem_verde() {
-    utils_lcd_clr();
-    utils_lcd_write_str("verde");
+    //utils_lcd_write_str("verde");
     stato_sem = verde;
     rgb(verde);
 }
 
 void sem_giallo_beep() {
-    utils_lcd_clr();
-    utils_lcd_write_str("giallo");
+    //utils_lcd_write_str("giallo");
     stato_sem = giallo;  
     rgb(giallo);
     int secs;
-    utils_audio_beep_start();
-    for(secs = TG; secs>0; secs--)
+    //utils_audio_beep_start();
+    for(secs = TG; secs>0; secs--) {
+        lcd_counter(secs);
         delay(1000);
+    }
     utils_audio_beep_stop();
 }
 
 void sem_rosso_lampeggiante() {
-    utils_lcd_clr();
-    utils_lcd_write_str("rosso");
+    //utils_lcd_write_str("rosso");
     stato_sem = rosso;
     
-    char buffer[10];
-    memset(buffer, 0, 10);
     lampeggio = TR;
     utils_timer1_init(1000, periph_bus_clock_hz, TM1_DIV_256, 
                 TRUE, INT_PRIORITY_7, INT_SUB_PRIORITY_0);
     while(lampeggio >= 0) {
-        
-        utils_lcd_cmd(0x80 | 0x40 | 0x07);
-        sprintf(buffer, "%02d", lampeggio);
-        utils_lcd_write_str(buffer);
-        
-        rgb(lampeggio%2 ? rosso : off);
+        lcd_counter(lampeggio);
+        if(lampeggio%2) {
+            rgb(rosso);
+        } else {
+            rgb(off);
+        }
     }
+}
+
+void lcd_counter(int value) {
+    utils_lcd_cmd(0x80 | 0x40 | 0x07);
+    sprintf(buffer, "%02d", value);
+    utils_lcd_write_str(buffer);
 }
 
 void sem_config() {
@@ -125,23 +145,19 @@ void sem_config() {
     utils_lcd_write_str("config");
 
     int counter = 0;
-    char buffer[10];
-    memset(buffer, 0, 10);
- 
     stato_sem = blu_config;
     while(!utils_button_get_btn_u()) {
         utils_lcd_cmd(0x80 | 0x40);    //cursore inizio seconda riga
-        utils_lcd_write_str("ADCval");
-        utils_lcd_cmd(0x80 | 0x40 | 0x07);    //cursore inizio seconda riga
+        utils_lcd_write_str("set TR");
         
         const int max_val = 1023;
         counter = MIN_TR + utils_adc_get_int(delay, 100) * (MAX_TR-MIN_TR) / max_val;
-        sprintf(buffer, "%02d", counter);
-        utils_lcd_write_str(buffer);
+        lcd_counter(counter);
     }
     
     TR = counter;
-    sem_verde(); 
+    sem_verde();
+    utils_lcd_clr();
 }
 
 void richiesta_sx(){
@@ -151,6 +167,7 @@ void richiesta_sx(){
     sem_giallo_beep();
     sem_rosso_lampeggiante();
     sem_verde();
+    utils_lcd_clr();
 }
 
 void richiesta_dx(){
@@ -160,21 +177,21 @@ void richiesta_dx(){
     sem_giallo_beep();
     sem_rosso_lampeggiante();
     sem_verde();
+    utils_lcd_clr();
 }
 
 void main() {
     utils_common_macro_enable_interrupts();
-    
+    memset(buffer, 0, 10);
+
     // init uart
     utils_uart4_init(9600, periph_bus_clock_hz);
     utils_uart4_puts("SEMAFORO PEDONALE: uart ready\r\n");
     utils_adc_init();
+    utils_rgb_init(periph_bus_clock_hz);
     utils_audio_init(periph_bus_clock_hz);
-
-    // init lcd
     utils_lcd_init(delay);
-    
-    utils_led_init(); //TODO: modify with RGB
+    utils_led_init(); 
     
     utils_button_init_btn_c(FALSE, 0, 0);
     utils_button_init_btn_u();

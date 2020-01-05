@@ -1,6 +1,7 @@
 #include <p32xxxx.h>
 #include <stdio.h>
 #include "utils_timer.h"
+#include "utils_lcd.h"
 
 // Timer 1 prescaler 0..3: 1,8,64,256
 int tm1_prescaler_vals[] = {1, 8, 64, 256};
@@ -97,8 +98,7 @@ int calc_pr(int period_ms, int bus_freq, int prescaler_val) {
 int calc_pr_16bit(int period_ms, int bus_freq, int prescaler_val) {
     unsigned int pr = calc_pr(period_ms, bus_freq, prescaler_val);
     if(pr > 0xFFFF) {
-        printf("required PR doesn't fit in 16bit");
-        int a = 1/0;
+        utils_lcd_write_str("ERROR TMR 16bit");
     }
     return pr;
 }
