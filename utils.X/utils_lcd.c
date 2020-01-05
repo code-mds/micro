@@ -50,7 +50,7 @@ void utils_lcd_config_pins()
     ansel_LCD_DB7 = 0;
 }
 
-void utils_lcd_init(int bus_freq, int prescaler) {
+void utils_lcd_init(void (*delay_fn)(int)) {
     //utils_lcd_config_pins();
     
     // default (IO) function for remapable pins
@@ -70,20 +70,20 @@ void utils_lcd_init(int bus_freq, int prescaler) {
     PMMODE = 0x3FF ; // Master Mode 1
     PMAEN = 0x0001 ; // PMA0 enabled   
 
-    utils_timer1_delay(30, bus_freq, prescaler);
+    (*delay_fn)(30);
     
     PMADDR = LCDCMD ; // command register ( ADDR = 0)
     PMDATA = 0x38 ; // 8-bit interface, 2 lines, 5x7
-    utils_timer1_delay(1, bus_freq, prescaler) ; // >48 us
+    (*delay_fn)(1); // >48 us
     
     PMDATA = 0x0c ; // ON, no cursor, no blink
-    utils_timer1_delay(1, bus_freq, prescaler) ; // >48 us
+    (*delay_fn)(1); // >48 us
     
     PMDATA = 0x01 ; // clear display
-    utils_timer1_delay(2, bus_freq, prescaler) ; // >1.6 ms
+    (*delay_fn)(1); // >1.6 ms
 
     PMDATA = 0x06 ; // increment cursor, no shift
-    utils_timer1_delay(2, bus_freq, prescaler) ; // >1.6 ms
+    (*delay_fn)(1); // >1.6 ms
 }
 
 char utils_lcd_read(int addr) {

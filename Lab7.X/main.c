@@ -49,11 +49,15 @@ const unsigned int periph_bus_clock_hz = 10000000; // 10 Mhz
 void _general_exception_handler(unsigned cause, unsigned status) {    
 }
 
+void delay_lcd(int delay_ms) {
+    utils_timer1_delay(delay_ms, periph_bus_clock_hz, TM1_DIV_256);
+}
+
 void main() {
     tm1_prescaler_t prescaler = TM1_DIV_256;
     utils_adc_init();
             
-    utils_lcd_init(periph_bus_clock_hz, prescaler);
+    utils_lcd_init(delay_lcd);
     utils_lcd_write_str("AD Converter");
 
     int counter = 0;

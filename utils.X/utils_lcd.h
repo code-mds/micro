@@ -16,7 +16,7 @@ extern "C" {
     #define LCDCMD 0 // RS = 0 ; access command register
     #define PMDATA PMDIN // PMP data buffer
     
-    void utils_lcd_init();
+    void utils_lcd_init(void (*delay_fn)(int));
     char utils_lcd_read(int addr);
     void utils_lcd_write(int addr, char c);
     void utils_lcd_write_str(const char *str);

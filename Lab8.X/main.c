@@ -68,6 +68,9 @@ Timer2Handler(void) {
     IFS0bits.T2IF = 0;      // clear interrupt flag
 }
 
+void delay(int delay_ms) {
+    utils_timer1_delay(delay_ms, periph_bus_clock_hz, TM1_DIV_256);
+}
 
 void main() {
     utils_common_macro_enable_interrupts();
@@ -85,7 +88,7 @@ void main() {
     utils_ocr_init();
     
     // init lcd
-    utils_lcd_init(periph_bus_clock_hz, TM1_DIV_256);
+    utils_lcd_init(delay);
     utils_lcd_write_str("Serie 8");
     
     int upper_bound = (2.5 / period_ms) * (PR2 +1);
@@ -98,14 +101,14 @@ void main() {
     utils_lcd_write_str("Upper");
     for(i = lower_bound; i<upper_bound; i+=step) {
         OC5RS = i;
-        utils_timer1_delay(200, periph_bus_clock_hz, TM1_DIV_256);
+        delay(200);
     }
     
     utils_lcd_cmd(0x80 | 0x40);
     utils_lcd_write_str("Lower ");
     for(i = upper_bound; i>lower_bound; i-=step) {
         OC5RS = i;
-        utils_timer1_delay(200, periph_bus_clock_hz, TM1_DIV_256);
+        delay(200);
     }
     
     while(1) {

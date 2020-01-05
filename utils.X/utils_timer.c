@@ -1,4 +1,5 @@
 #include <p32xxxx.h>
+#include <stdio.h>
 #include "utils_timer.h"
 
 // Timer 1 prescaler 0..3: 1,8,64,256
@@ -29,6 +30,12 @@ void utils_timer1_delay(int period_ms, int bus_freq, tm1_prescaler_t prescaler) 
     utils_timer1_init(period_ms, bus_freq, prescaler, FALSE, 0, 0);
     TMR1 = 0; 
     while (TMR1 < PR1); // wait
+}
+
+void utils_timer2_delay(int period_ms, int bus_freq, tmx_prescaler_t prescaler) {
+    utils_timer2_init(period_ms, bus_freq, prescaler, FALSE, 0, 0);
+    TMR2 = 0; 
+    while (TMR2 < PR2); // wait
 }
 
 // TIMER 2: 16 bit    
