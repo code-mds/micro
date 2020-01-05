@@ -12,6 +12,7 @@
       <itemPath>utils_button.h</itemPath>
       <itemPath>utils_lcd.h</itemPath>
       <itemPath>utils_adc.h</itemPath>
+      <itemPath>utils_audio.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -28,6 +29,7 @@
       <itemPath>utils_button.c</itemPath>
       <itemPath>utils_lcd.c</itemPath>
       <itemPath>utils_adc.c</itemPath>
+      <itemPath>utils_audio.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

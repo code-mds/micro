@@ -13,6 +13,7 @@
 #include "../utils.X/utils_timer.h"
 #include "../utils.X/utils_lcd.h"
 #include "../utils.X/utils_led.h"
+#include "../utils.X/utils_audio.h"
 
 // Joint Test Action Group (JTAG) interface
 #pragma config JTAGEN = OFF     // Disable JTAG
@@ -93,8 +94,10 @@ void sem_giallo_beep() {
     stato_sem = giallo;  
     rgb(giallo);
     int secs;
+    utils_audio_beep_start();
     for(secs = TG; secs>0; secs--)
         delay(1000);
+    utils_audio_beep_stop();
 }
 
 void sem_rosso_lampeggiante() {
@@ -166,6 +169,7 @@ void main() {
     utils_uart4_init(9600, periph_bus_clock_hz);
     utils_uart4_puts("SEMAFORO PEDONALE: uart ready\r\n");
     utils_adc_init();
+    utils_audio_init(periph_bus_clock_hz);
 
     // init lcd
     utils_lcd_init(delay);
