@@ -81,11 +81,15 @@ void rgb(stato_sem_t stato_sem) {
 }
 
 void sem_verde() {
+    utils_lcd_clr();
+    utils_lcd_write_str("verde");
     stato_sem = verde;
     rgb(verde);
 }
 
 void sem_giallo_beep() {
+    utils_lcd_clr();
+    utils_lcd_write_str("giallo");
     stato_sem = giallo;  
     rgb(giallo);
     int secs;
@@ -94,27 +98,65 @@ void sem_giallo_beep() {
 }
 
 void sem_rosso_lampeggiante() {
+    utils_lcd_clr();
+    utils_lcd_write_str("rosso");
     stato_sem = rosso;
     
+    char buffer[10];
+    memset(buffer, 0, 10);
+    lampeggio = TR;
     utils_timer1_init(1000, periph_bus_clock_hz, TM1_DIV_256, 
                 TRUE, INT_PRIORITY_7, INT_SUB_PRIORITY_0);
-    lampeggio = TR;
-    while(lampeggio > 0) {
+    while(lampeggio >= 0) {
+        
+        utils_lcd_cmd(0x80 | 0x40 | 0x07);
+        sprintf(buffer, "%02d", lampeggio);
+        utils_lcd_write_str(buffer);
+        
         rgb(lampeggio%2 ? rosso : off);
     }
 }
 
 void sem_config() {
+    utils_lcd_clr();
+    utils_lcd_write_str("config");
+
     int counter = 0;
     char buffer[10];
     memset(buffer, 0, 10);
  
     stato_sem = blu_config;
     while(!utils_button_get_btn_u()) {
-        counter = utils_adc_get_int(100, periph_bus_clock_hz, TM1_DIV_256);
-        sprintf(buffer, "%d", counter);
+        utils_lcd_cmd(0x80 | 0x40);    //cursore inizio seconda riga
+        utils_lcd_write_str("ADCval");
+        utils_lcd_cmd(0x80 | 0x40 | 0x07);    //cursore inizio seconda riga
+        
+        const int max_val = 1023;
+        counter = MIN_TR + utils_adc_get_int(delay, 100) * (MAX_TR-MIN_TR) / max_val;
+        sprintf(buffer, "%02d", counter);
         utils_lcd_write_str(buffer);
     }
+    
+    TR = counter;
+    sem_verde(); 
+}
+
+void richiesta_sx(){
+    richieste_attraversamento++;
+    utils_lcd_clr();
+    utils_lcd_write_str("call Sx");
+    sem_giallo_beep();
+    sem_rosso_lampeggiante();
+    sem_verde();
+}
+
+void richiesta_dx(){
+    richieste_attraversamento++;
+    utils_lcd_clr();
+    utils_lcd_write_str("call Dx");
+    sem_giallo_beep();
+    sem_rosso_lampeggiante();
+    sem_verde();
 }
 
 void main() {
@@ -123,10 +165,10 @@ void main() {
     // init uart
     utils_uart4_init(9600, periph_bus_clock_hz);
     utils_uart4_puts("SEMAFORO PEDONALE: uart ready\r\n");
-    
+    utils_adc_init();
+
     // init lcd
     utils_lcd_init(delay);
-    utils_adc_init();
     
     utils_led_init(); //TODO: modify with RGB
     
@@ -135,31 +177,19 @@ void main() {
     utils_button_init_btn_r();
     utils_button_init_btn_l();
     
+    sem_verde();
     while(1) {
         
         if(utils_button_get_btn_l()) {
-            richieste_attraversamento++;
-            utils_lcd_write_str("call Sx");
-            sem_giallo_beep();
-            sem_rosso_lampeggiante();
-            sem_verde();
-            utils_lcd_clr();
+            richiesta_sx();
         }
         
         if(utils_button_get_btn_r()) {
-            richieste_attraversamento++;
-            utils_lcd_write_str("call Dx");
-            sem_giallo_beep();
-            sem_rosso_lampeggiante();
-            sem_verde();
-            utils_lcd_clr();
+            richiesta_dx();
         }
         
         if(utils_button_get_btn_c()) {
-            utils_lcd_write_str("config");
             sem_config();
-            sem_verde();
-            utils_lcd_clr();
         }
     }
 }

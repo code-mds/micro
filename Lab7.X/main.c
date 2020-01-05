@@ -49,7 +49,7 @@ const unsigned int periph_bus_clock_hz = 10000000; // 10 Mhz
 void _general_exception_handler(unsigned cause, unsigned status) {    
 }
 
-void delay_lcd(int delay_ms) {
+void delay(int delay_ms) {
     utils_timer1_delay(delay_ms, periph_bus_clock_hz, TM1_DIV_256);
 }
 
@@ -57,10 +57,10 @@ void main() {
     tm1_prescaler_t prescaler = TM1_DIV_256;
     utils_adc_init();
             
-    utils_lcd_init(delay_lcd);
+    utils_lcd_init(delay);
     utils_lcd_write_str("AD Converter");
 
-    int counter = 0;
+    float counter = 0;
     char buffer[10];
     memset(buffer, 0, 10);
 
@@ -70,7 +70,7 @@ void main() {
         utils_lcd_write_str("ADCval");
         utils_lcd_cmd(0x80 | 0x40 | 0x07);    //cursore inizio seconda riga
 
-        counter = utils_adc_get_int(100, periph_bus_clock_hz, prescaler);
+        counter = utils_adc_get_int(delay, 100);
         
         sprintf(buffer, "%d", counter);
         utils_lcd_write_str(buffer);

@@ -15,7 +15,7 @@ extern "C" {
 #endif
 
     void utils_adc_init();
-    int utils_adc_get_int(int delay_ms, int bus_freq, tm1_prescaler_t prescaler);
+    int utils_adc_get_int(void(*delay)(int), int delay_ms);
 
 #ifdef	__cplusplus
 }

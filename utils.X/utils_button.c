@@ -6,7 +6,6 @@ void utils_button_init_btn_c(boolean_t use_interrupt, int priority,
     
     // Table 12-1 Data Sheet - INPUT PIN SELECTION
     TRISFbits.TRISF0 = INPUT;       // RF0 (Button C) configured as input
-
     // Enable interupt for Button C
     if(use_interrupt) {
         // External Interrupt 4 remap RF0 (Button C)
@@ -25,7 +24,8 @@ int utils_button_get_btn_c() {
 
 // RB8 BTNR (Button Right) 
 void utils_button_init_btn_r() {
-    TRISBbits.TRISB8 = INPUT;       
+    TRISBbits.TRISB8 = INPUT;
+    ANSELBbits.ANSB8 = DIGITAL;
 }
 int utils_button_get_btn_r() {
     return PORTBbits.RB8;
@@ -33,7 +33,8 @@ int utils_button_get_btn_r() {
 
 // RB0 BTNL (Button Left) 
 void utils_button_init_btn_l() {
-    TRISBbits.TRISB0 = INPUT;       
+    TRISBbits.TRISB0 = INPUT;  
+    ANSELBbits.ANSB0 = DIGITAL;
 }
 int utils_button_get_btn_l() {
     return PORTBbits.RB0;
@@ -42,6 +43,7 @@ int utils_button_get_btn_l() {
 // RB1 BTNU (Button Up) 
 void utils_button_init_btn_u() {
     TRISBbits.TRISB1 = INPUT;       
+    ANSELBbits.ANSB1 = DIGITAL;
 }
 int utils_button_get_btn_u() {
     return PORTBbits.RB1;
