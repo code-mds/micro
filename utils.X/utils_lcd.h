@@ -20,6 +20,7 @@ extern "C" {
     char utils_lcd_read(int addr);
     void utils_lcd_write(int addr, char c);
     void utils_lcd_write_str(const char *str);
+    void utils_lcd_write_int(int value);
 
     // check if busy
     #define utils_lcd_busy() utils_lcd_read(LCDCMD) & 0x80

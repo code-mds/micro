@@ -1,4 +1,6 @@
 #include <p32xxxx.h>
+#include <stdio.h>
+#include <string.h>
 #include "utils_lcd.h"
 #include "utils_timer.h"
 
@@ -27,6 +29,8 @@
 #define ansel_LCD_DB6       ANSELEbits.ANSE6
 #define ansel_LCD_DB7       ANSELEbits.ANSE7
 
+char buffer[10];
+
 void utils_lcd_config_pins()
 {
     // set control pins as digital outputs.
@@ -52,7 +56,8 @@ void utils_lcd_config_pins()
 
 void utils_lcd_init(void (*delay_fn)(int)) {
     //utils_lcd_config_pins();
-    
+    memset(buffer, 0, 10);
+
     // default (IO) function for remapable pins
     RPB15R = 0;  // rp_LCD_DISP_RS = 0;
     RPD5R = 0;   // rp_LCD_DISP_RW = 0;
@@ -107,4 +112,10 @@ void utils_lcd_write_str(const char *str) {
     while (*str) {
         utils_lcd_put(*str++);
     }
+}
+
+void utils_lcd_write_int(int value) {
+    utils_lcd_cmd(0x80 | 0x40 | 0x07);
+    sprintf(buffer, "%02d", value);
+    utils_lcd_write_str(buffer);    
 }

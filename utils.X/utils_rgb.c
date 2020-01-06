@@ -58,7 +58,7 @@ void utils_rgb_init(int periph_bus_clock_hz) {
     tris_LED8_B = OUTPUT;    
     ansel_LED8_B = DIGITAL;
 
-    PR5 = (int)(((float)(4*TMR_TIME * periph_bus_clock_hz) / 256) + 0.5);   //set period register, generates one interrupt every 300 us                     //             set period register, generates one interrupt every 300 us
+    PR5 = utils_timer_calc_pr_16bit(1, periph_bus_clock_hz, 256);
     TMR5 = 0;                           //    initialize count to 0
     T5CONbits.TCKPS = 3;                //    1:256 prescaler value
     T5CONbits.TGATE = 0;                //    not gated input (the default)

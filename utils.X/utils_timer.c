@@ -17,7 +17,7 @@ void utils_timer1_init(
     T1CON = 0x00;                   // STOP timer 1 and reset configuration 
     T1CONbits.TCKPS = prescaler;    // set prescaler
     TMR1 = 0;                       // reset counters to 0
-    PR1 = calc_pr_16bit(period_ms, bus_freq, tm1_prescaler_vals[prescaler]); 
+    PR1 = utils_timer_calc_pr_16bit(period_ms, bus_freq, tm1_prescaler_vals[prescaler]); 
     
     // configure interrupt
     IPC1bits.T1IP = priority;
@@ -47,7 +47,7 @@ void utils_timer2_init(
     T2CON = 0x00;                   // STOP timer 2 and reset configuration            
     T2CONbits.TCKPS = prescaler;    // set prescaler
     TMR2 = 0;                       // reset counters to 0 
-    PR2 = calc_pr_16bit(period_ms, bus_freq, tmx_prescaler_vals[prescaler]);
+    PR2 = utils_timer_calc_pr_16bit(period_ms, bus_freq, tmx_prescaler_vals[prescaler]);
     
     // configure interrupt
     IEC0bits.T2IE = 0; // disable interrupt
@@ -95,7 +95,7 @@ int calc_pr(int period_ms, int bus_freq, int prescaler_val) {
    return  period_ms / ( (1.0/bus_freq) * ms_to_micros * prescaler_val);
 }
 
-int calc_pr_16bit(int period_ms, int bus_freq, int prescaler_val) {
+int utils_timer_calc_pr_16bit(int period_ms, int bus_freq, int prescaler_val) {
     unsigned int pr = calc_pr(period_ms, bus_freq, prescaler_val);
     if(pr > 0xFFFF) {
         utils_lcd_write_str("ERROR TMR 16bit");

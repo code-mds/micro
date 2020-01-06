@@ -47,14 +47,6 @@
 #pragma config OSCIOFNC = ON  // CLKO Enable Configuration bit
 // ***********************************************
 
-const unsigned int periph_bus_clock_hz = 10000000; // 10 Mhz
-const int MIN_TR = 3;
-const int MAX_TR = 10;
-
-void delay(int delay_ms) {
-    utils_timer2_delay(delay_ms, periph_bus_clock_hz, TMx_DIV_256);
-}
-
 typedef enum {
     verde,
     giallo,
@@ -63,17 +55,41 @@ typedef enum {
     off
 } stato_sem_t;
 
-char buffer[10];
-stato_sem_t stato_sem = verde;
-int TG = 3;
-int TR = 5;
-int lampeggio = 0;
-int richieste_attraversamento = 0;
+const char* DATALOG_CMD = "datalog";
+const unsigned int periph_bus_clock_hz = 10000000; // 10 Mhz
+const int   MIN_TR = 3;
+const int   MAX_TR = 10;
+
+stato_sem_t _stato_sem = verde;
+int         _TG = 3;
+int         _TR = 5;
+int         _lampeggio = 0;
+int         _richieste_attraversamento = 0;
+char        _uart_command[30];
+int         _new_char_pos = 0;
+int         _new_word = FALSE;
+
+void delay(int delay_ms) {
+    utils_timer2_delay(delay_ms, periph_bus_clock_hz, TMx_DIV_256);
+}
 
 void __attribute__(( interrupt(ipl7auto), vector(_TIMER_1_VECTOR)))
-timer1_int_handler(void) {
-    lampeggio--;
+timer1_handler(void) {
+    _lampeggio--;
     IFS0bits.T1IF = 0; // reset interrupt
+}
+
+void __attribute__(( interrupt(ipl6auto), vector(_UART_4_VECTOR)))
+uart4_handler(void) {
+    char ch = U4RXREG;
+    if(ch == '\r' || ch == '\n') {
+        _new_word = TRUE;
+        ch = '\0';
+    }
+    _uart_command[_new_char_pos] = ch;
+    _new_char_pos++;
+    
+	IFS2bits.U4RXIF = 0;    // clear interrupt flag
 }
 
 void rgb(stato_sem_t stato_sem) {
@@ -88,45 +104,51 @@ void rgb(stato_sem_t stato_sem) {
             utils_rgb_set(0, 0, 255); 
             break;
         case giallo:
-            utils_rgb_set(255, 255, 0); 
+            utils_rgb_set(200, 200, 0); 
             break;
+        default:
+            utils_rgb_set(0, 0, 0); 
     }
 
+    /*
     utils_led_set(verde, stato_sem == verde ? LED_ON : LED_OFF);
     utils_led_set(giallo, stato_sem == giallo ? LED_ON : LED_OFF);
     utils_led_set(rosso, stato_sem == rosso ? LED_ON : LED_OFF);
-    utils_led_set(blu_config, stato_sem == blu_config ? LED_ON : LED_OFF);
+    utils_led_set(blu_config, stato_sem == blu_config ? LED_ON : LED_OFF); */
 }
 
 void sem_verde() {
     //utils_lcd_write_str("verde");
-    stato_sem = verde;
-    rgb(verde);
+    _stato_sem = verde;
+    rgb(_stato_sem);
 }
 
 void sem_giallo_beep() {
-    //utils_lcd_write_str("giallo");
-    stato_sem = giallo;  
-    rgb(giallo);
+    _stato_sem = giallo;  
+    utils_lcd_cmd(0x80 | 0x40);    //cursore inizio seconda riga
+    utils_lcd_write_str("giallo");
+
+    utils_audio_beep_start();
+    rgb(_stato_sem);
     int secs;
-    //utils_audio_beep_start();
-    for(secs = TG; secs>0; secs--) {
-        lcd_counter(secs);
+    for(secs = _TG; secs>0; secs--) {
+        utils_lcd_write_int(secs);
         delay(1000);
     }
     utils_audio_beep_stop();
 }
 
 void sem_rosso_lampeggiante() {
-    //utils_lcd_write_str("rosso");
-    stato_sem = rosso;
+    _stato_sem = rosso;
+    utils_lcd_cmd(0x80 | 0x40);    //cursore inizio seconda riga
+    utils_lcd_write_str("rosso");
     
-    lampeggio = TR;
+    _lampeggio = _TR;
     utils_timer1_init(1000, periph_bus_clock_hz, TM1_DIV_256, 
                 TRUE, INT_PRIORITY_7, INT_SUB_PRIORITY_0);
-    while(lampeggio >= 0) {
-        lcd_counter(lampeggio);
-        if(lampeggio%2) {
+    while(_lampeggio > 0) {
+        utils_lcd_write_int(_lampeggio);
+        if(_lampeggio%2) {
             rgb(rosso);
         } else {
             rgb(off);
@@ -134,34 +156,29 @@ void sem_rosso_lampeggiante() {
     }
 }
 
-void lcd_counter(int value) {
-    utils_lcd_cmd(0x80 | 0x40 | 0x07);
-    sprintf(buffer, "%02d", value);
-    utils_lcd_write_str(buffer);
-}
-
 void sem_config() {
     utils_lcd_clr();
     utils_lcd_write_str("config");
 
     int counter = 0;
-    stato_sem = blu_config;
+    _stato_sem = blu_config;
     while(!utils_button_get_btn_u()) {
         utils_lcd_cmd(0x80 | 0x40);    //cursore inizio seconda riga
         utils_lcd_write_str("set TR");
         
-        const int max_val = 1023;
-        counter = MIN_TR + utils_adc_get_int(delay, 100) * (MAX_TR-MIN_TR) / max_val;
-        lcd_counter(counter);
+        const int max_adc_val = 1023;
+        counter = MIN_TR + utils_adc_get_int(delay, 100) * 
+                 (MAX_TR-MIN_TR) / max_adc_val;
+        utils_lcd_write_int(counter);
     }
     
-    TR = counter;
+    _TR = counter;
     sem_verde();
     utils_lcd_clr();
 }
 
 void richiesta_sx(){
-    richieste_attraversamento++;
+    _richieste_attraversamento++;
     utils_lcd_clr();
     utils_lcd_write_str("call Sx");
     sem_giallo_beep();
@@ -171,7 +188,7 @@ void richiesta_sx(){
 }
 
 void richiesta_dx(){
-    richieste_attraversamento++;
+    _richieste_attraversamento++;
     utils_lcd_clr();
     utils_lcd_write_str("call Dx");
     sem_giallo_beep();
@@ -180,12 +197,30 @@ void richiesta_dx(){
     utils_lcd_clr();
 }
 
+void data_log() {
+    _new_word = FALSE;
+    _new_char_pos = 0;
+    if(strncmp(_uart_command, DATALOG_CMD, strlen(DATALOG_CMD)) == 0) {
+        memset(_uart_command, 30, 0x00);
+        char buffer[50];
+        memset(buffer, 50, 0x00);
+        
+        sprintf(buffer, "Tempo Rosso=%02d\r\n", _TR);
+        utils_uart4_puts(buffer);
+        
+        sprintf(buffer, "Tempo Giallo=%02d\r\n", _TG);
+        utils_uart4_puts(buffer);
+        
+        sprintf(buffer, "Richieste Attraversamento=%02d\r\n", _richieste_attraversamento);
+        utils_uart4_puts(buffer);
+    }
+}
+
 void main() {
     utils_common_macro_enable_interrupts();
-    memset(buffer, 0, 10);
-
+    
     // init uart
-    utils_uart4_init(9600, periph_bus_clock_hz);
+    utils_uart4_init_interrupt(9600, periph_bus_clock_hz, TRUE, 6, 0);
     utils_uart4_puts("SEMAFORO PEDONALE: uart ready\r\n");
     utils_adc_init();
     utils_rgb_init(periph_bus_clock_hz);
@@ -200,6 +235,10 @@ void main() {
     
     sem_verde();
     while(1) {
+        
+        if(_new_word) {
+            data_log();
+        }
         
         if(utils_button_get_btn_l()) {
             richiesta_sx();

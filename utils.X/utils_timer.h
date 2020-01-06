@@ -31,6 +31,7 @@ extern "C" {
         TMx_DIV_256 = 0b111 
     } tmx_prescaler_t;
     
+    int utils_timer_calc_pr_16bit(int period_ms, int bus_freq, int prescaler_val);
     // prescaler 0..3: 1,8,64,256
     void utils_timer1_init(
             int period_ms, int bus_freq, tm1_prescaler_t prescaler, 
