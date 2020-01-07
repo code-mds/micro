@@ -36,7 +36,8 @@ extern "C" {
     void utils_timer1_init(
             int period_ms, int bus_freq, tm1_prescaler_t prescaler, 
             boolean_t use_interrupt, int priority, int sub_priority);
-    
+    void utils_timer1_stop();
+
     void utils_timer1_delay(int period_ms, int bus_freq, tm1_prescaler_t prescaler);
     void utils_timer2_delay(int period_ms, int bus_freq, tmx_prescaler_t prescaler);
 

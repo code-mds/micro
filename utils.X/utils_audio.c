@@ -28,7 +28,7 @@ void utils_audio_init(int periph_bus_clock_hz) {
     T3CONbits.TCS = 0;       //PCBLK input (the default)
     T3CONbits.ON = 0;        //turn on Timer3
  
-    IPC3bits.T3IP = 7;      // interrupt priority
+    IPC3bits.T3IP = 3;      // interrupt priority
     IPC3bits.T3IS = 3;      // interrupt subpriority
     IEC0bits.T3IE = 1;      // enable Timer3 interrupt    
     IFS0bits.T3IF = 0;      // clear Timer3 interrupt flag
@@ -58,7 +58,7 @@ void utils_audio_beep_stop() {
     OC1CONbits.ON = 0;      // Turn off OC1
 }
 
-void __attribute__(( interrupt(ipl7auto), vector(_TIMER_3_VECTOR)))
+void __attribute__(( interrupt(ipl3auto), vector(_TIMER_3_VECTOR)))
 audio_timer3_int_handler(void) {
     OC1RS = 4 * rgSinSamples[(++idxAudioBuf) % cntAudioBuf];
     IFS0bits.T3IF = 0;

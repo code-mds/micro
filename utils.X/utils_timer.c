@@ -27,6 +27,10 @@ void utils_timer1_init(
     T1CONbits.ON = 1;
 }
 
+void utils_timer1_stop(){
+    T1CONbits.ON = 0;
+}
+
 void utils_timer1_delay(int period_ms, int bus_freq, tm1_prescaler_t prescaler) {
     utils_timer1_init(period_ms, bus_freq, prescaler, FALSE, 0, 0);
     TMR1 = 0; 

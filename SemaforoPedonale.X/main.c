@@ -63,7 +63,7 @@ const int   MAX_TR = 10;
 stato_sem_t _stato_sem = verde;
 int         _TG = 3;
 int         _TR = 5;
-int         _lampeggio = 0;
+int         _counter = 0;
 int         _richieste_attraversamento = 0;
 char        _uart_command[30];
 int         _new_char_pos = 0;
@@ -75,7 +75,7 @@ void delay(int delay_ms) {
 
 void __attribute__(( interrupt(ipl7auto), vector(_TIMER_1_VECTOR)))
 timer1_handler(void) {
-    _lampeggio--;
+    _counter--;
     IFS0bits.T1IF = 0; // reset interrupt
 }
 
@@ -130,30 +130,34 @@ void sem_giallo_beep() {
 
     utils_audio_beep_start();
     rgb(_stato_sem);
-    int secs;
-    for(secs = _TG; secs>0; secs--) {
-        utils_lcd_write_int(secs);
-        delay(1000);
+    
+    _counter = _TG;
+    utils_timer1_init(1000, periph_bus_clock_hz, TM1_DIV_256, 
+                TRUE, INT_PRIORITY_7, INT_SUB_PRIORITY_0);
+    while(_counter > 0) {
+        utils_lcd_write_int(_counter);
     }
+    utils_timer1_stop();
     utils_audio_beep_stop();
 }
 
 void sem_rosso_lampeggiante() {
     _stato_sem = rosso;
     utils_lcd_cmd(0x80 | 0x40);    //cursore inizio seconda riga
-    utils_lcd_write_str("rosso");
+    utils_lcd_write_str("rosso ");
     
-    _lampeggio = _TR;
+    _counter = _TR;
     utils_timer1_init(1000, periph_bus_clock_hz, TM1_DIV_256, 
                 TRUE, INT_PRIORITY_7, INT_SUB_PRIORITY_0);
-    while(_lampeggio > 0) {
-        utils_lcd_write_int(_lampeggio);
-        if(_lampeggio%2) {
+    while(_counter > 0) {
+        utils_lcd_write_int(_counter);
+        if(_counter%2) {
             rgb(rosso);
         } else {
             rgb(off);
         }
     }
+    utils_timer1_stop();
 }
 
 void sem_config() {
