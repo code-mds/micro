@@ -47,22 +47,14 @@
 #pragma config OSCIOFNC = ON  // CLKO Enable Configuration bit
 // ***********************************************
 
-typedef enum {
-    verde,
-    giallo,
-    rosso,
-    blu_config,
-    off
-} stato_sem_t;
-
 const char* DATALOG_CMD = "datalog";
 const unsigned int periph_bus_clock_hz = 10000000; // 10 Mhz
 const int   MIN_TR = 3;
 const int   MAX_TR = 10;
 
-stato_sem_t _stato_sem = verde;
-int         _TG = 3;
-int         _TR = 5;
+color_t     _stato_sem = verde;
+int         _TG = 3;        // tempo giallo
+int         _TR = 5;        // tempo rosso
 int         _counter = 0;
 int         _richieste_attraversamento = 0;
 char        _uart_command[30];
@@ -73,12 +65,14 @@ void delay(int delay_ms) {
     utils_timer2_delay(delay_ms, periph_bus_clock_hz, TMx_DIV_256);
 }
 
+// gestione count down con interrupt, x giallo e rosso
 void __attribute__(( interrupt(ipl7auto), vector(_TIMER_1_VECTOR)))
 timer1_handler(void) {
     _counter--;
     IFS0bits.T1IF = 0; // reset interrupt
 }
 
+// gestione uart con interrupt, per data log
 void __attribute__(( interrupt(ipl6auto), vector(_UART_4_VECTOR)))
 uart4_handler(void) {
     char ch = U4RXREG;
@@ -92,35 +86,10 @@ uart4_handler(void) {
 	IFS2bits.U4RXIF = 0;    // clear interrupt flag
 }
 
-void rgb(stato_sem_t stato_sem) {
-    switch(stato_sem) {
-        case verde:
-            utils_rgb_set(0, 255, 0); 
-            break;
-        case rosso:
-            utils_rgb_set(255, 0, 0); 
-            break;
-        case blu_config:
-            utils_rgb_set(0, 0, 255); 
-            break;
-        case giallo:
-            utils_rgb_set(200, 200, 0); 
-            break;
-        default:
-            utils_rgb_set(0, 0, 0); 
-    }
-
-    /*
-    utils_led_set(verde, stato_sem == verde ? LED_ON : LED_OFF);
-    utils_led_set(giallo, stato_sem == giallo ? LED_ON : LED_OFF);
-    utils_led_set(rosso, stato_sem == rosso ? LED_ON : LED_OFF);
-    utils_led_set(blu_config, stato_sem == blu_config ? LED_ON : LED_OFF); */
-}
-
 void sem_verde() {
     //utils_lcd_write_str("verde");
     _stato_sem = verde;
-    rgb(_stato_sem);
+    utils_rgb_set_color(_stato_sem);
 }
 
 void sem_giallo_beep() {
@@ -129,7 +98,7 @@ void sem_giallo_beep() {
     utils_lcd_write_str("giallo");
 
     utils_audio_beep_start();
-    rgb(_stato_sem);
+    utils_rgb_set_color(_stato_sem);
     
     _counter = _TG;
     utils_timer1_init(1000, periph_bus_clock_hz, TM1_DIV_256, 
@@ -152,9 +121,9 @@ void sem_rosso_lampeggiante() {
     while(_counter > 0) {
         utils_lcd_write_int(_counter);
         if(_counter%2) {
-            rgb(rosso);
+            utils_rgb_set_color(rosso);
         } else {
-            rgb(off);
+            utils_rgb_set_color(off);
         }
     }
     utils_timer1_stop();
@@ -165,7 +134,7 @@ void sem_config() {
     utils_lcd_write_str("config");
 
     int counter = 0;
-    _stato_sem = blu_config;
+    _stato_sem = blu;
     while(!utils_button_get_btn_u()) {
         utils_lcd_cmd(0x80 | 0x40);    //cursore inizio seconda riga
         utils_lcd_write_str("set TR");

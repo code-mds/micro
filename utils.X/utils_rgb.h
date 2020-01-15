@@ -12,8 +12,20 @@
 extern "C" {
 #endif
 
+    typedef enum {
+        verde,
+        giallo,
+        rosso,
+        blu,
+        off
+    } color_t;
+
+
     void utils_rgb_init();
-    void utils_rgb_set(int r, int g, int b);
+    void utils_rgb_init_int();
+
+    void utils_rgb_set_color(color_t color);
+    void utils_rgb_set_int(int r, int g, int b);
 
 #ifdef	__cplusplus
 }
