@@ -1,4 +1,4 @@
-# Programmazione Microcontrollori
+# SUPSI - Programmazione Microcontrollori
 
 * IDE: MPLABX
 * Micro: PIC32MX370F512L
